@@ -29,10 +29,7 @@ class MealController extends Controller
 
     public function getMeals(Request $request) {
 
-        $meals = Meal::active()->paginate(10);
-
-        
-        dd($meals[0]->dishes);
+        $meals = Meal::active()->paginate(10);        
 
         if(count($meals) > 0)
         {
