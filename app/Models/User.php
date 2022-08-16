@@ -10,9 +10,11 @@ use Illuminate\Notifications\Notifiable;
 use Nicolaslopezj\Searchable\SearchableTrait;
 use Spatie\Permission\Traits\HasRoles;
 
+use Laravel\Passport\HasApiTokens;
+
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, Notifiable, searchableTrait, HasRoles;
+    use HasFactory, Notifiable, searchableTrait, HasApiTokens, HasRoles;
 
     protected $guarded = [];
 
