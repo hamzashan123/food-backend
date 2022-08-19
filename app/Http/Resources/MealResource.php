@@ -47,6 +47,8 @@ class MealResource extends JsonResource
             'peopleType'=> ($this->peopleType == null || $this->peopleType->name == null ? '' : $this->peopleType->name),
             'mealType'=> ($this->mealType == null || $this->mealType->name == null ? '' : $this->mealType->name),
             'tags'=> TagResource::collection($this->tags),
+            'Dishes'=> DishResource::collection($this->dishes),
+            'days'=> $this->getDihesDays,
             'images'=> $ImageArray,
         ];
     }
