@@ -7,7 +7,6 @@
     "require": {
         "php": "^7.3|^8.0",
         "beyondcode/laravel-websockets": "^1.12",
-        
         "cviebrock/eloquent-sluggable": "^8.0",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
@@ -18,6 +17,7 @@
         "jantinnerezo/livewire-alert": "^2.2",
         "laravel/framework": "^8.40",
         "laravel/legacy-factories": "^1.0",
+        "laravel/passport": "^10.4",
         "laravel/socialite": "^5.0",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.3",
