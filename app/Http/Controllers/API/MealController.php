@@ -48,6 +48,39 @@ class MealController extends Controller
         }
     }
 
+    public function getMealById(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'meal_id'          => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $response_data = [
+                'success' => false,
+                'message' => 'Incomplete data provided!',
+                'errors' => $validator->errors()
+            ];
+            return response()->json($response_data);
+        }
+
+        $meals = Meal::active()->where('id',$request->meal_id)->first();
+
+        if($meals != null)
+        {
+            $response_data = [
+                'success' => true,
+                'message' =>  'Meal Record',
+                'data' => new MealResource($meals),
+            ];
+            return response()->json($response_data, $this->successStatus);
+        } else {
+            $response_data = [
+                'success' => false,
+                'message' => 'Data Not Found',
+            ];
+            return response()->json($response_data, $this->successStatus);
+        }
+
+    }
 
 }
 

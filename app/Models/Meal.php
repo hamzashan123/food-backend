@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Nicolaslopezj\Searchable\SearchableTrait;
+use App\Models\MealDetail;
 
 class Meal extends Model
 {
@@ -77,7 +78,7 @@ class Meal extends Model
     public function dishes()
     {
         return $this->belongsToMany(Dish::class, 'meal_details', 'meal_id', 'dish_id')->withPivot(['day_id']);
-    }    
+    }
 
     public function days()
     {
@@ -92,11 +93,28 @@ class Meal extends Model
     public function media(): MorphMany
     {
         return $this->morphMany(Media::class, 'mediable');
-    }
+    }    
 
     public function firstMedia(): MorphOne
     {
         return $this->morphOne(Media::class, 'mediable')
             ->orderBy('file_sort', 'asc');
+    }
+
+    /*
+    public function getDihesDays() {
+        return $this->hasMany(MealDetail::class, 'id', 'meal_id')
+                ->join('dishes', 'dishes.id', '=', 'meal_details.dish_id')
+                ->join('days', 'days.id', '=', 'meal_details.day_id')
+                ->join('people_types','people_types.id', '=', 'dishes.people_types_id')
+                ->select('dishes.id AS dishid', 'dishes.name AS dishname', 'dishes.slug AS dishslug', 'dishes.description AS dishdescription',
+                'dishes.details AS dishdetail', 'dishes.price AS dishprice', 'people_types.name AS peopletype', 'days.id AS dayid', 'days.name AS dayname', 
+                'days.short_name AS dayshortname');                
+    }
+    */
+    public function getDihesDays() {
+        return $this->hasMany(MealDetail::class, 'meal_id', 'id')
+                ->join('days', 'days.id', '=', 'meal_details.day_id')                
+                ->select('days.id', 'days.short_name', 'days.name');
     }
 }

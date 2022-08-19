@@ -14,6 +14,7 @@ Route::post('getDishById', [App\Http\Controllers\API\DishController::class, 'get
 
 //Meal
 Route::post('getMeals', [App\Http\Controllers\API\MealController::class, 'getMeals']);
+Route::post('getMealById', [App\Http\Controllers\API\MealController::class, 'getMealById']);
 
 
 Route::group(['middleware' => 'auth:api'], function() {

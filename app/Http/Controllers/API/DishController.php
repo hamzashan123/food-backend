@@ -29,7 +29,17 @@ class DishController extends Controller
 
     public function getDishes(Request $request) {
 
-        $dishes = Dish::active()->paginate(10);
+        $dishes = Dish::active();
+
+        if($request->filter != null) {
+            $dishes = $dishes->where('name', 'like', '%' . $request->filter . '%')
+                             ->orWhere('description', 'like', '%' . $request->filter . '%')
+                             ->orWhere('details', 'like', '%' . $request->filter . '%');
+                   
+            //$dishes = $dishes->orWhereHas()
+        }
+
+        $dishes = $dishes->paginate(10);
 
         if(count($dishes) > 0)
         {
