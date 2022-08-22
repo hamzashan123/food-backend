@@ -29,7 +29,36 @@ class MealController extends Controller
 
     public function getMeals(Request $request) {
 
-        $meals = Meal::active()->paginate(10);        
+        $meals = Meal::active();       
+
+        if($request->filter != null) {
+
+            $meals = $meals->where('name', 'like', '%' . $request->filter . '%')
+                        ->orWhere('description', 'like', '%' . $request->filter . '%')
+                        ->orWhere('details', 'like', '%' . $request->filter . '%');
+
+            
+            //Filter People Types
+            $meals = $meals->orWhereHas('peopleType', function($query) use ($request) {
+                $query = $query->where('status', '1')->where('name', 'like', "%" . $request->filter . "%");
+                return $query;
+            });
+
+             //Filter Meal Types
+             $meals = $meals->orWhereHas('mealType', function($query) use ($request) {
+                $query = $query->where('status', '1')->where('name', 'like', "%" . $request->filter . "%");
+                return $query;
+            });
+
+            //Filter Tags
+            $meals = $meals->orWhereHas('tags', function($query) use ($request) {
+                $query = $query->where('status', '1')->where('name', 'like', "%" . $request->filter . "%");
+                return $query;
+            });
+        }
+
+        $meals = $meals->paginate(10);
+        
 
         if(count($meals) > 0)
         {

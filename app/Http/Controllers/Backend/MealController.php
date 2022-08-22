@@ -114,15 +114,29 @@ class MealController extends Controller
         $this->authorize('edit_meal');
 
         if ($request->validated()) {
-            $meal->update($request->except('tags', 'images', '_token'));
+            $meal->update($request->except('tags', 'images', 'dishes', 'days', '_token'));
             $meal->tags()->sync($request->tags);
 
+            $dishes = $request->input('dishes', []);
+            $days = $request->input('days', []);
+
+            //Remove Previous Records
+            $meal->removeMealDetail($meal->id);
+
+            //Insert Update Meal Detail
+            for ($dish=0; $dish < count($dishes); $dish++) {
+                if ($dishes[$dish] != '') {
+                    $meal->dishes()->attach($dishes[$dish], ['day_id' => $days[$dish]]);
+                }
+            }
+/*
             if ($request->images && $meal->media->count() > 0) {
                 foreach ($meal->media as $media) {
                     (new ImageService())->unlinkImage($media->file_name, 'meals');
                     $media->delete();
                 }
             }
+            */
 
             $i = $meal->media()->count() + 1;
 

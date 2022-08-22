@@ -35,8 +35,24 @@ class DishController extends Controller
             $dishes = $dishes->where('name', 'like', '%' . $request->filter . '%')
                              ->orWhere('description', 'like', '%' . $request->filter . '%')
                              ->orWhere('details', 'like', '%' . $request->filter . '%');
-                   
-            //$dishes = $dishes->orWhereHas()
+            
+            //Filter People Types
+            $dishes = $dishes->orWhereHas('peopleType', function($query) use ($request) {
+                $query = $query->where('status', '1')->where('name', 'like', "%" . $request->filter . "%");
+                return $query;
+            });
+
+            //Filter Tags
+            $dishes = $dishes->orWhereHas('tags', function($query) use ($request) {
+                $query = $query->where('status', '1')->where('name', 'like', "%" . $request->filter . "%");
+                return $query;
+            });
+
+            //Filter Ingregiats
+            $dishes = $dishes->orWhereHas('ingrediants', function($query) use ($request) {
+                $query = $query->where('status', '1')->where('name', 'like', "%" . $request->filter . "%");
+                return $query;
+            });
         }
 
         $dishes = $dishes->paginate(10);

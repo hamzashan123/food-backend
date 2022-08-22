@@ -126,22 +126,22 @@
                                     <tbody>
                                         <tr id="dish0">
                                             <td>
-                                                <select name="dishes[]" id="dishes_" class="form-control">
+                                                <select name="dishes[]" id="dishes_0" class="form-control">
                                                     <option value="">-- choose dish --</option>
                                                     @foreach ($dishes as $dish)
                                                         <option value="{{ $dish->id }}"
-                                                            {{ $dish->id == $meal->dishes[0]->id ? 'selected' : null }}>
+                                                            {{ count($meal->dishes) > 0 && $dish->id == $meal->dishes[0]->id ? '' : null }}>
                                                             {{ $dish->name }} (${{ number_format($dish->price, 2) }})
                                                         </option>
                                                     @endforeach
                                                 </select>
                                             </td>
                                             <td>
-                                                <select name="days[]" class="form-control">
+                                                <select name="days[]" id="days_0" class="form-control">
                                                     <option value="">-- choose day --</option>
                                                     @foreach ($days as $day)
                                                         <option value="{{ $day->id }}"
-                                                        {{ $day->id == $meal->dishes[0]->pivot->day_id ? 'selected' : null }}>                                                        
+                                                        {{ count($meal->dishes) > 0 && $day->id == $meal->dishes[0]->pivot->day_id ? '' : null }}>                                                        
                                                             {{ $day->name }}
                                                         </option>
                                                     @endforeach
@@ -296,6 +296,7 @@
                 initialPreviewFileType: 'image',
                 initialPreviewConfig: [
                         @if($meal->media()->count() > 0)
+                        
                             @foreach($meal->media as $media)
                                 {
                                     caption: "{{ $media->file_name }}",
@@ -309,6 +310,7 @@
                                     key: {{ $media->id }}
                                 },
                             @endforeach
+                            
                         @endif
                 ]
             }).on('filesorted', function (event, params) {
@@ -318,6 +320,8 @@
             
         })
 
+        
+
         $(document).ready(function(){
             let row_number = 0;
             $("#add_row").click(function(e){
@@ -325,6 +329,8 @@
             let new_row_number = row_number - 1;
             $('#dish' + row_number).html($('#dish' + new_row_number).html()).find('td:first-child');
             $('#dishes_table').append('<tr id="dish' + (row_number + 1) + '"></tr>');
+
+            //$('#dishes_3').removeAttr('id');
             row_number++;
             });
 
@@ -337,28 +343,40 @@
             });
 
             
-            
-            
-            
-
-
             @if($meal->dishes()->count() > 0)
                 @foreach($meal->dishes as $dish)
-                    {
+                    {                        
                         let new_row_number = row_number - 1;
-                        $('#dish' + row_number).html($('#dish' + new_row_number).html()).find('td:first-child');
-                        $('#dishes_table').append('<tr id="dish' + (row_number + 1) + '"></tr>');
+
+                        debugger                        
                         
-                        row_number++;                        
+                        if(new_row_number >= 0) {
+                            let html = $('#dish' + new_row_number).html();
+                            html = html.replace("dishes_" + new_row_number, "dishes_" + row_number).replace("days_" + new_row_number, "days_" + row_number);
+
+                            $('#dish' + row_number).html(html).find('td:first-child');
+                            $('#dishes_table').append('<tr id="dish' + (row_number + 1) + '"></tr>');
+                        }                        
+
+                        $("#dishes_" + row_number).val('{{ $dish->id }}');
+                        $("#days_" + row_number).val('{{ $dish->pivot->day_id }}');
+
+                        row_number++;
                     }
+                @endforeach
+                    
+                let i = 0;
+                @foreach($meal->dishes as $dish)
+                {
+                    debugger
+                    $('#dishes_' + i).removeAttr('id');
+                    $('#days_' + i).removeAttr('id');
+                    i++;
+                }
                 @endforeach
             @endif
 
-
         });
-
-        
-
 
     </script>
 @endsection

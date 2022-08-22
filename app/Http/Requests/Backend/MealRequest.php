@@ -43,14 +43,14 @@ class MealRequest extends FormRequest
             case 'PATCH':
             {
                 return [
-                    'name' => ['required', 'max:255'],
-                    'description' => ['required', 'max:1000'],
-                    'price' => ['required', 'numeric'],                    
+                    'name' => ['required', 'max:255'],                    
+                    'price' => ['required', 'numeric'],
                     'tags.*' => ['required'],
-                    'meal_types_id' => ['required'],
                     'people_types_id' => ['required'],
-                    'details' => ['required', 'max:10000'],
+                    'meal_types_id' => ['required'],                    
                     'status' => ['required'],
+                    'description' => ['required', 'max:1000'],
+                    'details' => ['required', 'max:10000'],                    
                     'images' => ['nullable'],
                     'images.*' => ['mimes:jpg,jpeg,png,gif', 'max:3000']
                 ];

@@ -65,6 +65,11 @@ class Meal extends Model
         });
     }
 
+    public function removeMealDetail($id) {        
+        $mealDetail = MealDetail::where('meal_id', $id);        
+        $mealDetail->delete();        
+    }
+
     public function mealType(): BelongsTo
     {
         return $this->belongsTo(MealType::class, 'meal_types_id','id');
@@ -112,9 +117,18 @@ class Meal extends Model
                 'days.short_name AS dayshortname');                
     }
     */
+
+
     public function getDihesDays() {
         return $this->hasMany(MealDetail::class, 'meal_id', 'id')
                 ->join('days', 'days.id', '=', 'meal_details.day_id')                
                 ->select('days.id', 'days.short_name', 'days.name');
     }
+
+    public function getDishes() {
+        return $this->hasMany(MealDetail::class, 'meal_id', 'id')
+                ->join('dishes', 'dishes.id', '=', 'meal_details.dish_id')                
+                ->select('dishes.*');
+    }
+
 }

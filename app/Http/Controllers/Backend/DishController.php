@@ -102,12 +102,14 @@ class DishController extends Controller
             $dish->tags()->sync($request->tags);
             $dish->ingrediants()->sync($request->ingrediants);
 
+            /*
             if ($request->images && $dish->media->count() > 0) {
                 foreach ($dish->media as $media) {
                     (new ImageService())->unlinkImage($media->file_name, 'dishes');
                     $media->delete();
                 }
             }
+            */
 
             $i = $dish->media()->count() + 1;
 
