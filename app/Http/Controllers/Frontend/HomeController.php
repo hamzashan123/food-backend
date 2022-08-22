@@ -12,17 +12,18 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function index(): View
+    public function index()
     {
-        $coupon = Coupon::active()->public()->first();
+        return "Admin dashboard url: ".url('/admin');
+        // $coupon = Coupon::active()->public()->first();
 
-        $categories = Category::select('slug', 'cover', 'name')
-            ->active()
-            ->whereParentId(null)
-            ->limit(4)
-            ->get();
+        // $categories = Category::select('slug', 'cover', 'name')
+        //     ->active()
+        //     ->whereParentId(null)
+        //     ->limit(4)
+        //     ->get();
 
-        return view('frontend.index', compact('categories', 'coupon'));
+        // return view('frontend.index', compact('categories', 'coupon'));
     }
 
     public function search(Request $request): JsonResponse
