@@ -30,6 +30,7 @@ class MealController extends Controller
     public function getMeals(Request $request) {
 
         $meals = Meal::active();       
+        //$meals = $meals->where('id','35');
 
         if($request->filter != null) {
 

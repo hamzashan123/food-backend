@@ -10,6 +10,9 @@ use Auth;
 use Illuminate\Support\Facades\File;
 use App\Models\UserRole;
 use App\Http\Resources\TagResource;
+use App\Http\Resources\DaysResource;
+use App\Models\MealDetail;
+use App\Models\Day;
 
 class MealResource extends JsonResource
 {
@@ -21,6 +24,15 @@ class MealResource extends JsonResource
      */
     public function toArray($request)
     {
+        //$mealDays = MealDetail::where('meal_id', $this->id)->pluck('day_id');
+        //$days = Day::whereIn('id', $mealDays)->get();
+        
+        //if(count($days) > 0) {
+        //    $days->meal_id = $this->id;
+        //}
+
+        //dd(count($this->getDihesDays));
+
         $ImageArray = [];
         $rownumber = 1;
         foreach ($this->media as $image) {         
@@ -47,8 +59,8 @@ class MealResource extends JsonResource
             'peopleType'=> ($this->peopleType == null || $this->peopleType->name == null ? '' : $this->peopleType->name),
             'mealType'=> ($this->mealType == null || $this->mealType->name == null ? '' : $this->mealType->name),
             'tags'=> TagResource::collection($this->tags),
-            'Dishes'=> DishResource::collection($this->dishes),
-            'days'=> $this->getDihesDays,
+            'days'=> ($this->getDihesDays != null && count($this->getDihesDays) > 0 ? DaysResource::collection($this->getDihesDays) : '' ),
+            //'days'=> $this->getDihesDays,
             'images'=> $ImageArray,
         ];
     }

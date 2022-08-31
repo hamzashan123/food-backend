@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Nicolaslopezj\Searchable\SearchableTrait;
+use App\Models\MealDetail;
 
 class Day extends Model
 {
@@ -49,5 +50,11 @@ class Day extends Model
     public function meals()
     {
         return $this->hasMany(Meal::class);
+    }
+
+    public function getDishes() {
+        return $this->hasMany(MealDetail::class, 'day_id', 'id')
+                ->join('dishes', 'dishes.id', '=', 'meal_details.dish_id')
+                ->select('dishes.*');
     }
 }

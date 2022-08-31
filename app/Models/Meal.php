@@ -122,7 +122,7 @@ class Meal extends Model
     public function getDihesDays() {
         return $this->hasMany(MealDetail::class, 'meal_id', 'id')
                 ->join('days', 'days.id', '=', 'meal_details.day_id')                
-                ->select('days.id', 'days.short_name', 'days.name');
+                ->select('days.id', 'days.short_name', 'days.name', 'meal_details.meal_id')->distinct()->orderBy('days.id', 'asc');
     }
 
     public function getDishes() {
@@ -130,5 +130,6 @@ class Meal extends Model
                 ->join('dishes', 'dishes.id', '=', 'meal_details.dish_id')                
                 ->select('dishes.*');
     }
+
 
 }
