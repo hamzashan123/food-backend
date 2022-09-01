@@ -46,8 +46,7 @@ class MealResource extends JsonResource
 
             $ImageArray[] = $imageurl;
             $rownumber = ($rownumber + 1);
-        }
-
+        }        
 
         return [
             'id'=> $this->id,
@@ -59,7 +58,7 @@ class MealResource extends JsonResource
             'peopleType'=> ($this->peopleType == null || $this->peopleType->name == null ? '' : $this->peopleType->name),
             'mealType'=> ($this->mealType == null || $this->mealType->name == null ? '' : $this->mealType->name),
             'tags'=> TagResource::collection($this->tags),
-            'days'=> ($this->getDihesDays != null && count($this->getDihesDays) > 0 ? DaysResource::collection($this->getDihesDays) : '' ),
+            'days'=> ($this->mealDays != null && count($this->mealDays) > 0 ? DaysResource::collection($this->mealDays) : '' ),
             //'days'=> $this->getDihesDays,
             'images'=> $ImageArray,
         ];

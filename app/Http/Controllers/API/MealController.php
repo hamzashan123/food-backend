@@ -29,11 +29,11 @@ class MealController extends Controller
 
     public function getMeals(Request $request) {
 
-        $meals = Meal::active();       
-        //$meals = $meals->where('id','35');
+        $meals = Meal::active();
 
         if($request->filter != null) {
 
+            //Filter Meals
             $meals = $meals->where('name', 'like', '%' . $request->filter . '%')
                         ->orWhere('description', 'like', '%' . $request->filter . '%')
                         ->orWhere('details', 'like', '%' . $request->filter . '%');
@@ -54,6 +54,39 @@ class MealController extends Controller
             //Filter Tags
             $meals = $meals->orWhereHas('tags', function($query) use ($request) {
                 $query = $query->where('status', '1')->where('name', 'like', "%" . $request->filter . "%");
+                return $query;
+            });
+
+            //Filter Days
+            $meals = $meals->orWhereHas('mealDays', function($query) use ($request) {
+                $query = $query->where('status', '1')->where('name', 'like', "%" . $request->filter . "%");
+                return $query;
+            });
+
+            //Filter Dishes
+            $meals = $meals->orWhereHas('dishes', function($query) use ($request) {
+                $query = $query->where('status', '1')->where('name', 'like', "%" . $request->filter . "%")
+                        ->orWhere('description', 'like', '%' . $request->filter . '%')
+                        ->orWhere('details', 'like', '%' . $request->filter . '%');
+
+                //Filter Dish People Type
+                $query = $query->orWhereHas('peopleType', function($subquery) use ($request) {
+                    $subquery = $subquery->where('status', '1')->where('name', 'like', "%" . $request->filter . "%");
+                    return $subquery;
+                });
+
+                //Filter Dish Tags
+                $query = $query->orWhereHas('tags', function($subquery) use ($request) {
+                    $subquery = $subquery->where('status', '1')->where('name', 'like', "%" . $request->filter . "%");
+                    return $subquery;
+                });
+
+                //Filter Dish Ingrediants
+                $query = $query->orWhereHas('ingrediants', function($subquery) use ($request) {
+                    $subquery = $subquery->where('status', '1')->where('name', 'like', "%" . $request->filter . "%");
+                    return $subquery;
+                });
+
                 return $query;
             });
         }

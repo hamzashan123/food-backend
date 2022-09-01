@@ -23,19 +23,14 @@ class DaysResource extends JsonResource
      */
     public function toArray($request)
     {
-        //dd($this->meal_id);
-        $mealDishes = MealDetail::where('meal_id', $this->meal_id)->where('day_id', $this->id)->pluck('dish_id');
+        $mealDishes = MealDetail::where('meal_id', $this->pivot->meal_id)->where('day_id', $this->id)->pluck('dish_id');
         $dishes = Dish::whereIn('id', $mealDishes)->get();
-
-        //dd($dishes);
-
 
         return [
             'id'=> $this->id,
             'short_name'=> $this->short_name,
-            'name'=> $this->name,
-            //'dishes'=> $this->getDishes,
-            //'dishes'=> DishResource::collection($this->$dishes) ?? '',
+            'name'=> $this->name,            
+            'dishes'=> DishResource::collection($dishes) ?? '',
         ];
     }
 }

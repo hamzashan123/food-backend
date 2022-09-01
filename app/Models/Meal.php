@@ -80,6 +80,11 @@ class Meal extends Model
         return $this->belongsToMany(Tag::class, 'meal_tags', 'meal_id', 'tag_id');
     }
 
+    public function mealDays(): BelongsToMany
+    {
+        return $this->belongsToMany(Day::class, 'meal_details', 'meal_id', 'day_id')->distinct()->orderBy('day_id','asc')->withPivot(['meal_id']);
+    }
+
     public function dishes()
     {
         return $this->belongsToMany(Dish::class, 'meal_details', 'meal_id', 'dish_id')->withPivot(['day_id']);
