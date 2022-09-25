@@ -18,7 +18,7 @@ use App\Http\Requests\Backend\MealRequest;
 
 use App\Models\Meal;
 
-class MealController extends Controller
+class MealPlanController extends Controller
 {
     use ImageUploadTrait;
 

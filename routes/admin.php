@@ -64,8 +64,8 @@ Route::group(['middleware' => ['roles']], function () {
     Route::post('/dishes/remove-image', [DishController::class, 'removeImage'])->name('dishes.remove_image');
     Route::resource('dishes', DishController::class);
     Route::post('/meals/remove-image', [MealController::class, 'removeImage'])->name('meals.remove_image');
-    Route::resource('meals', MealController::class);
-
+    Route::resource('meals', MealController::class);    
+    Route::resource('mealplans', MealController::class);
     //new routes here..
 });
 

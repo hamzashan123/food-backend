@@ -166,5 +166,14 @@ class LinkSeeder extends Seeder
             'permission_title' => 'access_meal',
             'status' => 1,
         ]);
+
+        Link::whereStatus(true)->create([
+            'title' => 'Meal Plans',
+            'as' => 'Meal Plans',
+            'to' => 'admin.mealplans.index',
+            'icon' => 'far fa-file',
+            'permission_title' => 'access_mealplan',
+            'status' => 1,
+        ]);
     }
 }

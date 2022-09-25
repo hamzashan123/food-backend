@@ -15,7 +15,6 @@ class MealDetail extends Model
 
     protected $fillable = [
         'meal_id',
-        'dish_id',
-        'day_id'
+        'dish_id'
     ];
 }

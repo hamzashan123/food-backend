@@ -108,7 +108,7 @@
                                     <thead>
                                         <tr>
                                             <th>Dish</th>
-                                            <th>Day</th>
+                                            
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -122,17 +122,7 @@
                                                         </option>
                                                     @endforeach
                                                 </select>
-                                            </td>
-                                            <td>
-                                                <select name="days[]" class="form-control">
-                                                    <option value="">-- choose day --</option>
-                                                    @foreach ($days as $day)
-                                                        <option value="{{ $day->id }}">
-                                                            {{ $day->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </td>
+                                            </td>                                            
                                         </tr>
                                         <tr id="dish1"></tr>
                                     </tbody>
