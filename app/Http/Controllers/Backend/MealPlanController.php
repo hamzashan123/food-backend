@@ -11,12 +11,15 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Models\PeopleType;
 use App\Models\MealType;
+use App\Models\Meal;
+use App\Models\City;
 use App\Models\Dish;
 use App\Models\Day;
-use App\Http\Requests\Backend\MealRequest;
+use Illuminate\Http\JsonResponse;
+use App\Http\Requests\Backend\MealPlanRequest;
 
 
-use App\Models\Meal;
+use App\Models\MealPlan;
 
 class MealPlanController extends Controller
 {
@@ -24,9 +27,9 @@ class MealPlanController extends Controller
 
     public function index(): View
     {
-        $this->authorize('access_meal');
+        $this->authorize('access_mealplan');
 
-        $meals = Meal::with('peopleType', 'mealType', 'tags', 'firstMedia')
+        $mealplans = MealPlan::with('tags', 'firstMedia')
             ->when(\request()->keyword != null, function ($query) {
                 $query->search(\request()->keyword);
             })
@@ -36,34 +39,106 @@ class MealPlanController extends Controller
             ->orderBy(\request()->sortBy ?? 'id', \request()->orderBy ?? 'desc')
             ->paginate(\request()->limitBy ?? 10);
 
-        return view('backend.meals.index', compact('meals'));
+        return view('backend.mealplans.index', compact('mealplans'));
     }
 
     public function create(): View
     {
-        $this->authorize('create_meal');
+        $this->authorize('create_mealplan');
 
-        $people_types = PeopleType::active()->get(['id', 'name']);
-        $meal_types = MealType::active()->get(['id', 'name']);
-        $dishes = Dish::active()->get(['id', 'name', 'price']);
+        //$people_types = PeopleType::active()->get(['id', 'name']);
+        
+        $meals = Meal::active()->get(['id', 'name']);
+        //$dishes = Dish::active()->get(['id', 'name', 'price']);
         //$days = Day::active()->get(['id', 'short_name', 'name']);
         $tags = Tag::active()->get(['id', 'name']);
 
         //return view('backend.meals.create', compact('tags', 'meal_types', 'people_types', 'dishes', 'days'));
-        return view('backend.meals.create', compact('tags', 'meal_types', 'people_types', 'dishes'));
+        return view('backend.mealplans.create', compact('tags', 'meals'));
     }
 
+    
 
-    public function store(MealRequest $request): RedirectResponse
+    public function store(MealPlanRequest $request): RedirectResponse
     {
-        $this->authorize('create_meal');
+        $request->request->remove('meal_id');
         
-        if ($request->validated()){
+        $meals=[];
+        if(isset($request['mondaymeals'])) {
+            for ($m=0; $m < count($request['mondaymeals']); $m++) {                
+                $data = ["meal_id" => $request['mondaymeals'][$m], "day_id" => 1];
+                $meals[] = $data;                
+            }            
+        }
+        if(isset($request['tuesdaymeals'])) {
+            for ($m=0; $m < count($request['tuesdaymeals']); $m++) {                
+                $data = ["meal_id" => $request['tuesdaymeals'][$m], "day_id" => 2];
+                $meals[] = $data;                
+            }            
+        }
+        if(isset($request['wednesdaymeals'])) {
+            for ($m=0; $m < count($request['wednesdaymeals']); $m++) {                
+                $data = ["meal_id" => $request['wednesdaymeals'][$m], "day_id" => 3];
+                $meals[] = $data;                
+            }            
+        }
+        if(isset($request['thursdaymeals'])) {
+            for ($m=0; $m < count($request['thursdaymeals']); $m++) {                
+                $data = ["meal_id" => $request['thursdaymeals'][$m], "day_id" => 4];
+                $meals[] = $data;                
+            }            
+        }
+        if(isset($request['fridaymeals'])) {
+            for ($m=0; $m < count($request['fridaymeals']); $m++) {                
+                $data = ["meal_id" => $request['fridaymeals'][$m], "day_id" => 5];
+                $meals[] = $data;                
+            }            
+        }
+        if(isset($request['saturdaymeals'])) {
+            for ($m=0; $m < count($request['saturdaymeals']); $m++) {                
+                $data = ["meal_id" => $request['saturdaymeals'][$m], "day_id" => 6];
+                $meals[] = $data;                
+            }            
+        }
+        if(isset($request['sundaymeals'])) {
+            for ($m=0; $m < count($request['sundaymeals']); $m++) {                
+                $data = ["meal_id" => $request['sundaymeals'][$m], "day_id" => 7];
+                $meals[] = $data;                
+            }            
+        }
+
+        $request->request->add(['meals' => $meals]);
+        $request->request->remove('mondaymeals');
+        $request->request->remove('tuesdaymeals');
+        $request->request->remove('wednesdaymeals');
+        $request->request->remove('thursdaymeals');
+        $request->request->remove('fridaymeals');
+        $request->request->remove('saturdaymeals');
+        $request->request->remove('sundaymeals');
+        //dd($request->all());
+        //$mondayExist = (isset($request['mondaymeals'])) ? $request['mondaymeals'] : 'not found';
+
+
+        $this->authorize('create_mealplan');
+        
+        if ($request->validated()) {
            // $meal = Meal::create($request->except('tags', 'images', 'dishes', 'days', '_token'));
-           $meal = Meal::create($request->except('tags', 'images', 'dishes','_token'));
+           //$employeeNum = (isset($request['txtMondayMeals'])) ? $request['txtMondayMeals'] : 'not found';
+           //$days = $request['txtMondayMeals'];
+           //$mea = $request->input(('txtMondayMeals'));
+
+           //dd($request->all());
+           //////////////dd($request['txtMondayMeals']);
+
+           $meal = MealPlan::create($request->except('tags', 'images', 'meals', '_token'));
 
             $meal->tags()->attach($request->tags);
-
+            $meal->meals()->attach($request->meals);
+            //$mondayMeals;
+            //$mondayMeals->implode($request['txtMondayMeals'], ',');
+            //dd($request->all());
+            
+/*
             $dishes = $request->input('dishes', []);
             //$days = $request->input('days', []);
 
@@ -73,15 +148,15 @@ class MealPlanController extends Controller
                     $meal->dishes()->attach($dishes[$dish]);
                 }
             }
-
+*/
             if ($request->images && count($request->images) > 0) {
-                (new ImageService())->storeMealImages($request->images, $meal);
+                (new ImageService())->storeMealPlanImages($request->images, $meal);
             }
 
             clear_cache();
 
-            return redirect()->route('admin.meals.index')->with([
-                'message' => 'Create meal successfully',
+            return redirect()->route('admin.mealplans.index')->with([
+                'message' => 'Create meal plan successfully',
                 'alert-type' => 'success'
             ]);
         }
@@ -91,14 +166,14 @@ class MealPlanController extends Controller
             'alert-type' => 'error'
         ]);
     }
-/*
-    public function show(Dish $dish): View
-    {
-        $this->authorize('show_dish');
 
-        return view('backend.dishes.show', compact('dish'));
+    public function show(MealPlan $mealplan): View
+    {
+        $this->authorize('show_mealplan');
+
+        return view('backend.show_mealplan.show', compact('mealplan'));
     }
-*/
+
     public function edit(Meal $meal): View
     {
         $this->authorize('edit_meal');
@@ -196,5 +271,14 @@ class MealPlanController extends Controller
 
         return true;
     }
-    
+
+    public function get_meals(Request $request): JsonResponse
+    {        
+        $meals = Meal::whereStatus(true)
+            ->whereId($request->meal_id)
+            ->get(['id', 'name'])
+            ->toArray();
+
+        return response()->json($meals);
+    }
 }

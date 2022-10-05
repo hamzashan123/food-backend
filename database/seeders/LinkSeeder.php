@@ -169,7 +169,7 @@ class LinkSeeder extends Seeder
 
         Link::whereStatus(true)->create([
             'title' => 'Meal Plans',
-            'as' => 'Meal Plans',
+            'as' => 'MealPlan',
             'to' => 'admin.mealplans.index',
             'icon' => 'far fa-file',
             'permission_title' => 'access_mealplan',

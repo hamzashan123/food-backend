@@ -3,16 +3,17 @@
 namespace App\Models;
 
 use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Nicolaslopezj\Searchable\SearchableTrait;
 
 class MealType extends Model
 {
     protected $guarded = [];
 
-    use Sluggable, SearchableTrait;
+    use HasFactory;
+    use Sluggable;
+    use SearchableTrait;
 
     /**
      * Return the sluggable configuration array for this model.
@@ -48,6 +49,12 @@ class MealType extends Model
 
     public function meals()
     {
-        return $this->hasMany(Meal::class);
+        //return $this->hasMany(Meal::class);
+        return $this->belongsToMany(Meal::class, 'meal_meal_type');
     }
+
+    //public function mealplans()
+    //{
+    //    return $this->belongsToMany(MealPlan::class, 'meal_plan_types');
+    //}
 }

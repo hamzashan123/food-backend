@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Backend\CityRequest;
 use App\Models\City;
 use App\Models\State;
+use App\Models\Meal;
+use App\Models\Dish;
+use App\Models\Tag;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
@@ -93,11 +96,22 @@ class CityController extends Controller
 
     public function get_cities(Request $request): JsonResponse
     {
+        /*
         $cities = City::whereStateId($request->state_id)
             ->whereStatus(true)
             ->get(['id', 'name'])
             ->toArray();
+*/
+    $cities = Meal::with('peopleType', 'mealType', 'tags', 'firstMedia')->whereId($request->meal_id)->get();
 
         return response()->json($cities);
     }
+
+    public function get_dishes(Request $request): JsonResponse
+    {        
+        $cities = Dish::with('peopleType', 'tags', 'firstMedia')->whereId($request->dish_id)->get();
+
+        return response()->json($cities);
+    }
+
 }

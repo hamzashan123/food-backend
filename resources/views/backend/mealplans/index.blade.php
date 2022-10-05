@@ -4,21 +4,21 @@
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex">
             <h6 class="m-0 font-weight-bold text-primary">
-                Meals
+                Meal Plans
             </h6>
             <div class="ml-auto">
                 @can('create_category')
-                    <a href="{{ route('admin.meals.create') }}" class="btn btn-primary">
+                    <a href="{{ route('admin.mealplans.create') }}" class="btn btn-primary">
                     <span class="icon text-white-50">
                         <i class="fa fa-plus"></i>
                     </span>
-                        <span class="text">New Meal</span>
+                        <span class="text">New Meal Plan</span>
                     </a>
                 @endcan
             </div>
         </div>
 
-        @include('partials.backend.filter', ['model' => route('admin.meals.index')])
+        @include('partials.backend.filter', ['model' => route('admin.mealplans.index')])
 
         <div class="table-responsive">
             <table class="table table-hover">
@@ -29,47 +29,43 @@
                     <th>Name</th>
                     <th>Price</th>
                     <th>Tags</th>
-                    <th>People Type</th>
-                    <th>Meal Types</th>                    
                     <th>Status</th>
                     <th>Created at</th>
                     <th class="text-center" style="width: 30px;">Action</th>
                 </tr>
                 </thead>
                 <tbody>
-                @forelse($meals as $meal)
+                @forelse($mealplans as $mealplan)
                     <tr>
-                        <td>{{ $meal->id }}</td>
+                        <td>{{ $mealplan->id }}</td>
                         <td>
-                            @if($meal->firstMedia)
-                            <img src="{{ asset('storage/images/meals/' . $meal->firstMedia->file_name) }}"
-                                 width="60" height="60" alt="{{ $meal->name }}">
+                            @if($mealplan->firstMedia)
+                            <img src="{{ asset('storage/images/mealplans/' . $mealplan->firstMedia->file_name) }}"
+                                 width="60" height="60" alt="{{ $mealplan->name }}">
                             @else
-                                <img src="{{ asset('img/no-img.png') }}" width="60" height="60" alt="{{ $meal->name }}">
+                                <img src="{{ asset('img/no-img.png') }}" width="60" height="60" alt="{{ $mealplan->name }}">
                             @endif
                         </td>
-                        <td><a href="{{ route('admin.meals.show', $meal->id) }}">{{ $meal->name }}</a></td>                        
-                        <td>SR {{ $meal->price }}</td>
-                        <td class="text-danger">{{ $meal->tags->pluck('name')->join(', ') }}</td>
-                        <td>{{ $meal->peopleType ? $meal->peopleType->name : NULL }}</td>
-                        <td class="text-danger">{{ $meal->mealTypes->pluck('name')->join(', ') }}</td>                        
-                        <td>{{ $meal->status }}</td>
-                        <td>{{ $meal->created_at }}</td>
+                        <td><a href="{{ route('admin.mealplans.show', $mealplan->id) }}">{{ $mealplan->name }}</a></td>                        
+                        <td>SR {{ $mealplan->price }}</td>
+                        <td class="text-danger">{{ $mealplan->tags->pluck('name')->join(', ') }}</td>                        
+                        <td>{{ $mealplan->status }}</td>
+                        <td>{{ $mealplan->created_at }}</td>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <a href="{{ route('admin.meals.edit', $meal) }}" class="btn btn-sm btn-primary">
+                                <a href="{{ route('admin.mealplans.edit', $mealplan) }}" class="btn btn-sm btn-primary">
                                     <i class="fa fa-edit"></i>
                                 </a>
                                 <a href="javascript:void(0);"
                                    onclick="if (confirm('Are you sure to delete this record?'))
-                                       {document.getElementById('delete-meal-{{ $meal->id }}').submit();} else {return false;}"
+                                       {document.getElementById('delete-meal-plan-{{ $mealplan->id }}').submit();} else {return false;}"
                                    class="btn btn-sm btn-danger">
                                     <i class="fa fa-trash"></i>
                                 </a>
                             </div>
-                            <form action="{{ route('admin.meals.destroy', $meal) }}"
+                            <form action="{{ route('admin.mealplans.destroy', $mealplan) }}"
                                   method="POST"
-                                  id="delete-meal-{{ $meal->id }}" class="d-none">
+                                  id="delete-meal-plan-{{ $mealplan->id }}" class="d-none">
                                 @csrf
                                 @method('DELETE')
                             </form>
@@ -77,7 +73,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td class="text-center" colspan="10">No meals found.</td>
+                        <td class="text-center" colspan="10">No meal plans found.</td>
                     </tr>
                 @endforelse
                 </tbody>
@@ -85,7 +81,7 @@
                 <tr>
                     <td colspan="10">
                         <div class="float-right">
-                            {!! $meals->appends(request()->all())->links() !!}
+                            {!! $mealplans->appends(request()->all())->links() !!}
                         </div>
                     </td>
                 </tr>

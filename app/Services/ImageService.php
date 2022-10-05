@@ -54,6 +54,21 @@ class ImageService
         }
     }
 
+    public function storeMealPlanImages($images, $mealplan, $i = 1)
+    {
+        foreach ($images as $image) {
+            $mealplan->media()->create([
+                'file_name' => $this->uploadImages($mealplan->name, $image, $i, 'mealplans', 500, NULL),
+                'file_size' => $image->getSize(),
+                'file_type' => $image->getMimeType(),
+                'file_status' => true,
+                'file_sort' => $i
+            ]);
+
+            $i++;
+        }
+    }
+
     public function storeUserImages($fileName, $image): string
     {
         return $this->uploadImage(

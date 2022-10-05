@@ -55,4 +55,9 @@ class Tag extends Model
     {
         return $this->belongsToMany(Meal::class, 'meal_tags');
     }
+
+    public function mealplans()
+    {
+        return $this->belongsToMany(MealPlan::class, 'meal_plan_tags');
+    }    
 }

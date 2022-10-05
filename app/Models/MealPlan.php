@@ -11,9 +11,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Nicolaslopezj\Searchable\SearchableTrait;
-use App\Models\MealDetail;
+use App\Models\MealPlanDetail;
 
-class Meal extends Model
+class MealPlan extends Model
 {
     use HasFactory, Sluggable, SearchableTrait;
 
@@ -31,8 +31,8 @@ class Meal extends Model
     protected $searchable = [
 
         'columns' => [
-            'meals.name' => 10,
-            'meals.slug' => 10
+            'meal_plans.name' => 10,
+            'meal_plans.slug' => 10
         ],
     ];
 
@@ -44,59 +44,39 @@ class Meal extends Model
     public function scopeActive($query)
     {
         return $query->whereStatus(true);
+    }    
+
+    public function removeMealPlanDetail($id) {        
+        $mealPlanDetail = MealPlanDetail::where('meal_plan_id', $id);
+        $mealPlanDetail->delete();        
     }
 
-    public function scopeActivePeopleType($query)
-    {
-        return $query->whereHas('peopleType', function ($query) {
-            $query->whereStatus(1);
-        });
-    }
-
-    public function peopleType(): BelongsTo
-    {
-        return $this->belongsTo(PeopleType::class, 'people_types_id', 'id');
-    }
-/*
-    public function scopeActiveMealType($query)
-    {
-        return $query->whereHas('mealType', function ($query) {
-            $query->whereStatus(1);
-        });
-    }
-*/
-    public function removeMealDetail($id) {        
-        $mealDetail = MealDetail::where('meal_id', $id);        
-        $mealDetail->delete();        
-    }
-
-    public function mealTypes(): BelongsToMany
-    {
-        //return $this->belongsTo(MealType::class, 'meal_types_id','id');
-        return $this->belongsToMany(MealType::class, 'meal_meal_type', 'meal_id', 'meal_type_id');
-    }
+    //public function mealTypes(): BelongsToMany
+    //{
+    //    return $this->belongsTo(MealType::class, 'meal_plan_types','meal_plan_id','meal_type_id');
+    //}
 
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class, 'meal_tags', 'meal_id', 'tag_id');
+        return $this->belongsToMany(Tag::class, 'meal_plan_tags', 'meal_plan_id', 'tag_id');
     }
 
-    public function mealDays(): BelongsToMany
-    {
-        return $this->belongsToMany(Day::class, 'meal_details', 'meal_id')->distinct()->orderBy('day_id','asc')->withPivot(['meal_id']);
-    }
+    //public function mealDays(): BelongsToMany
+    //{
+    //    return $this->belongsToMany(Day::class, 'meal_details', 'meal_id')->distinct()->orderBy('day_id','asc')->withPivot(['meal_id']);
+    //}
 
-    public function dishes()
+    public function meals()
     {
         //return $this->belongsToMany(Dish::class, 'meal_details', 'meal_id', 'dish_id')->withPivot(['day_id']);
-        return $this->belongsToMany(Dish::class, 'meal_details', 'meal_id', 'dish_id');
+        return $this->belongsToMany(Meal::class, 'meal_plan_details', 'meal_plan_id', 'meal_id')->withPivot(['day_id']);;
     }
-
+/*
     public function days()
     {
         return $this->belongsToMany(Day::class);
     }
-
+*/
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -125,7 +105,7 @@ class Meal extends Model
     }
     */
 
-
+/*
     public function getDihesDays() {
         return $this->hasMany(MealDetail::class, 'meal_id', 'id')
                 ->join('days', 'days.id', '=', 'meal_details.day_id')                
@@ -137,6 +117,6 @@ class Meal extends Model
                 ->join('dishes', 'dishes.id', '=', 'meal_details.dish_id')                
                 ->select('dishes.*');
     }
-
+*/
 
 }

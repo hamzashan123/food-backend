@@ -53,17 +53,14 @@
                     </div>    
                     <div class="col-6">
                         <div class="form-group">
-                            <label for="meal_types_id">Meal Type</label>
-                            <select name="meal_types_id" id="meal_types_id" class="form-control">
-                                <option value="">---</option>
-                                @forelse($meal_types as $meal_type)
-                                    <option value="{{ $meal_type->id }}" {{ old('meal_types_id') == $meal_type->id ? 'selected' : null }}>
-                                        {{ $meal_type->name }}
-                                    </option>
+                            <label for="mealTypes">Meal Types</label>
+                            <select name="mealTypes[]" id="mealTypes" class="form-control select2" multiple="multiple">
+                                @forelse($mealTypes as $mealType)
+                                    <option value="{{ $mealType->id }}">{{ $mealType->name }}</option>
                                 @empty
                                 @endforelse
                             </select>
-                            @error('meal_types_id')<span class="text-danger">{{ $message }}</span>@enderror
+                            @error('mealTypes')<span class="text-danger">{{ $message }}</span>@enderror
                         </div>
                     </div>
                 </div>
@@ -99,42 +96,76 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-header" style="background: lightblue; font-size: 18px; font-weight: bold;">
-                                Dishes
+                            <div class="card-header" style="background: #224abe; color: white; font-size: 18px; ">
+                                Dish Menu
                             </div>
 
                             <div class="card-body">
-                                <table class="table" id="dishes_table">
-                                    <thead>
-                                        <tr>
-                                            <th>Dish</th>
-                                            
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr id="dish0">
-                                            <td>
-                                                <select name="dishes[]" class="form-control">
-                                                    <option value="">-- choose dish --</option>
-                                                    @foreach ($dishes as $dish)
-                                                        <option value="{{ $dish->id }}">
-                                                            {{ $dish->name }} (${{ number_format($dish->price, 2) }})
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </td>                                            
-                                        </tr>
-                                        <tr id="dish1"></tr>
-                                    </tbody>
-                                </table>
-
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <button id="add_row" class="btn btn-default pull-left">+ Add Row</button>
-                                        <button id='delete_row' class="pull-right btn btn-danger">- Delete Row</button>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label for="dish_id">Meals</label>
+                                            <select name="dish_id" id="dish_id" class="form-control">
+                                                <option value="">---</option>
+                                                @forelse($dishes as $dish)
+                                                    <option value="{{ $dish->id }}">
+                                                        {{ $dish->name }}
+                                                    </option>
+                                                @empty
+                                                @endforelse
+                                            </select>
+                                            @error('dish_id')<span class="text-danger">{{ $message }}</span>@enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="col-2 btn btn-primary" id="btnAddDish" style="height:50%; margin-top:32px; margin-left: 12px;">                                            
+                                        <span class="icon text-white-50">
+                                            <i class="fa fa-plus"></i>
+                                        </span>
+                                        <span class="text">Add Dish</span>
+                                        </a>                                      
+                                    </div>                                    
+                                    
+                                    
+                                   
+
+                                    
+                                </div>                                
+                                
+                            </div>
+
+                            <div class="row" style="margin-bottom: 10px;">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="card" style="margin-left:5px; margin-right:5px; padding-left: 10px; padding-right: 10px;">                                                        
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover">
+                                                        <thead>
+                                                        <tr>
+                                                            <th style="display:none;">ID</th>
+                                                            <th>Image</th>
+                                                            <th>Name</th>                                                                        
+                                                            <th>Price</th>
+                                                            <th>Tags</th>
+                                                            <th>People Type</th>                                                                                                                                  
+                                                            <th class="text-center" style="width: 30px;">Action</th>
+                                                        </tr>
+                                                        </thead>
+                                                            <tbody id="tbody_dish">
+                                                                
+                                                            </tbody>
+                                                        <tfoot>                                                                    
+                                                        </tfoot>
+                                                    </table>
+                                                </div>                                            
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            
+                     
                         </div>
                     </div>
                 </div>
@@ -248,9 +279,71 @@
                 closeOnSelect: false,
                 minimumResultsForSearch: Infinity,
                 matcher: matchStart
-            });            
+            });
+
+            $("#mealTypes").select2({
+                mealTypes: true,
+                closeOnSelect: false,
+                minimumResultsForSearch: Infinity,
+                matcher: matchStart
+            });  
         })
 
+        $('#btnAddDish').on('click', function(e) {
+            
+            debugger        
+
+
+            let dishId = $('#dish_id').val();                
+            $.get("{{ route('admin.cities.get_dishes') }}", { dish_id: dishId }, function (data) {
+               
+                var data_ = data[0];               
+                 
+                var imageUrl = "{{ asset('storage/images/dishes/') }}" + "/" + data_["first_media"]["file_name"];
+                var tags = "";
+
+                $.each(data_["tags"], function (index, value) {
+                    tags+= value["name"] + ", ";
+                });
+
+                tags = tags.slice(0,-2);                
+                //var idtd_ = '<td style="display:none;">' + data_["id"] + '</td>'
+                var idtd_ = '<td style="display:none;"> <input type="number" name="dishes[]" value="' + data_["id"] + '" class="form-control"</td>'
+                var imagetd_ = '<td><img src=' + imageUrl + ' height="100" style="object-fit: contain;" alt="' + data_["name"] + '"></td>';
+                var nametd_ = '<td>' + data_["name"] + '</td>'
+                var pricetd_ = '<td>' + data_["price"] + '</td>'
+                var tagstd_ = '<td>' + tags + '</td>'
+                var peopletypetd_ = '<td>' + data_["people_type"]["name"] + '</td>'
+                
+                var actiontd_ = '<td><a class="btn btn-sm btn-danger" onClick="deleteDish(tr_id_' + data_["id"] + ')" style="background: white; color: red;"><i class="fa fa-trash"></i></a></td>';
+                var tr = '<tr id="tr_id_' + data_["id"] + '">' + idtd_ + imagetd_ + nametd_ +  pricetd_ + tagstd_ + peopletypetd_ + actiontd_ + '</tr>';
+                debugger
+                
+                if(getHTML("tr_id_" + data_["id"])) {                        
+                    $("#tbody_dish").append(tr);
+                }  
+
+            }, "json");
+
+        })
+
+        function deleteDish(rowid) {
+            debugger
+            $("#" + rowid.id).remove();
+        }
+
+        function getHTML(trid) {
+            debugger
+            var returnVal = false;
+
+            if($("#" + trid).length == 0) {
+                var returnVal = true;
+            }
+
+            return returnVal;
+        }
+
+/*
         $(document).ready(function(){
             let row_number = 1;
             $("#add_row").click(function(e){
@@ -269,5 +362,7 @@
             }
             });
         });
+*/
+
     </script>
 @endsection

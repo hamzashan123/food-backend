@@ -26,7 +26,7 @@ class MealController extends Controller
     {
         $this->authorize('access_meal');
 
-        $meals = Meal::with('peopleType', 'mealType', 'tags', 'firstMedia')
+        $meals = Meal::with('peopleType', 'mealTypes', 'tags', 'firstMedia')
             ->when(\request()->keyword != null, function ($query) {
                 $query->search(\request()->keyword);
             })
@@ -44,25 +44,27 @@ class MealController extends Controller
         $this->authorize('create_meal');
 
         $people_types = PeopleType::active()->get(['id', 'name']);
-        $meal_types = MealType::active()->get(['id', 'name']);
-        $dishes = Dish::active()->get(['id', 'name', 'price']);
+        $mealTypes = MealType::active()->get(['id', 'name']);
+        $dishes = Dish::active()->get(['id', 'name']);
         //$days = Day::active()->get(['id', 'short_name', 'name']);
         $tags = Tag::active()->get(['id', 'name']);
 
         //return view('backend.meals.create', compact('tags', 'meal_types', 'people_types', 'dishes', 'days'));
-        return view('backend.meals.create', compact('tags', 'meal_types', 'people_types', 'dishes'));
+        return view('backend.meals.create', compact('tags', 'mealTypes', 'people_types', 'dishes'));
     }
 
 
     public function store(MealRequest $request): RedirectResponse
     {
+        $request->request->remove('dish_id');
         $this->authorize('create_meal');
         
         if ($request->validated()){
            // $meal = Meal::create($request->except('tags', 'images', 'dishes', 'days', '_token'));
-           $meal = Meal::create($request->except('tags', 'images', 'dishes','_token'));
+           $meal = Meal::create($request->except('tags', 'mealTypes', 'images', 'dishes','_token'));
 
             $meal->tags()->attach($request->tags);
+            $meal->mealTypes()->attach($request->mealTypes);
 
             $dishes = $request->input('dishes', []);
             //$days = $request->input('days', []);
@@ -160,8 +162,6 @@ class MealController extends Controller
             'alert-type' => 'error'
         ]);
     }
-
-    
 
     public function destroy(Meal $meal): RedirectResponse
     {

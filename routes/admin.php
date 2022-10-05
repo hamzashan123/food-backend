@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Backend\DishController;
 use App\Http\Controllers\Backend\MealController;
+use App\Http\Controllers\Backend\MealPlanController;
 
 Auth::routes(['verify' => true]);
 
@@ -50,6 +51,7 @@ Route::group(['middleware' => ['roles']], function () {
     Route::get('/states/get-states', [StateController::class, 'get_states'])->name('states.get_states');
     Route::resource('states', StateController::class);
     Route::get('/cities/get-cities', [CityController::class, 'get_cities'])->name('cities.get_cities');
+    Route::get('/cities/get-dishes', [CityController::class, 'get_dishes'])->name('cities.get_dishes');
     Route::resource('cities', CityController::class);
     Route::get('users/get-users', [UserController::class, 'get_users'])->name('users.get_users');
     Route::resource('users', UserController::class);
@@ -65,7 +67,9 @@ Route::group(['middleware' => ['roles']], function () {
     Route::resource('dishes', DishController::class);
     Route::post('/meals/remove-image', [MealController::class, 'removeImage'])->name('meals.remove_image');
     Route::resource('meals', MealController::class);    
-    Route::resource('mealplans', MealController::class);
+    Route::resource('mealplans', MealPlanController::class);
+    Route::post('/mealplans/remove-image', [MealPlanController::class, 'removeImage'])->name('mealplans.remove_image');
+    
     //new routes here..
 });
 

@@ -60,18 +60,17 @@
                     </div>
                     <div class="col-6">
                         <div class="form-group">
-                            <label for="meal_types_id">Meal Type</label>
-                            <select name="meal_types_id" id="meal_types_id" class="form-control">
-                                <option value="">---</option>
-                                @forelse($meal_types as $meal_type)
-                                    <option value="{{ $meal_type->id }}" 
-                                        {{ old('meal_types_id', $meal->meal_types_id) == $meal_type->id ? 'selected' : null }}>
-                                        {{ $meal_type->name }}
+                            <label for="mealTypes">Meal Types</label>
+                            <select name="mealTypes[]" id="mealTypes" class="form-control">                                
+                                @forelse($mealTypes as $mealType)
+                                    <option value="{{ $mealType->id }}" 
+                                        {{ in_array($mealType->id, $meal->mealTypes->pluck('id')->toArray()) ? 'selected' : null }}>
+                                        {{ $mealType->name }}
                                     </option>
                                 @empty
                                 @endforelse
                             </select>
-                            @error('meal_types_id')<span class="text-danger">{{ $message }}</span>@enderror
+                            @error('mealTypes')<span class="text-danger">{{ $message }}</span>@enderror
                         </div>
                     </div>
                 </div>
@@ -262,6 +261,13 @@
 
             $("#tags").select2({
                 tags: true,
+                closeOnSelect: false,
+                minimumResultsForSearch: Infinity,
+                matcher: matchStart
+            });
+
+            $("#mealTypes").select2({
+                mealTypes: true,
                 closeOnSelect: false,
                 minimumResultsForSearch: Infinity,
                 matcher: matchStart
