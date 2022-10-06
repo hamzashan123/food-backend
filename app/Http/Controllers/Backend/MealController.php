@@ -105,44 +105,39 @@ class MealController extends Controller
     {
         $this->authorize('edit_meal');
 
-        $meal_types = MealType::whereStatus(true)->get(['id', 'name']);
+        $mealTypes = MealType::whereStatus(1)->get(['id', 'name']);
         $peopleTypes = PeopleType::whereStatus(true)->get(['id', 'name']);
-        $dishes = Dish::whereStatus(true)->get(['id', 'name', 'price']);
+        $dishes = Dish::whereStatus(true)->get(['id', 'name']);
         $days = Day::whereStatus(true)->get(['id', 'short_name', 'name']);
-        $tags = Tag::whereStatus(1)->get(['id', 'name']);        
+        $tags = Tag::whereStatus(1)->get(['id', 'name']);
+        
+        //dd($meal->dishes);
 
-        return view('backend.meals.edit', compact('meal', 'meal_types', 'peopleTypes', 'tags', 'dishes', 'days'));
+        return view('backend.meals.edit', compact('meal', 'mealTypes', 'peopleTypes', 'tags', 'dishes', 'days'));
     }
 
     public function update(MealRequest $request, Meal $meal): RedirectResponse
     {
+        $request->request->remove('dish_id');
         $this->authorize('edit_meal');
 
         if ($request->validated()) {
-            $meal->update($request->except('tags', 'images', 'dishes', 'days', '_token'));
+            $meal->update($request->except('tags', 'mealTypes', 'images', 'dishes','_token'));
             $meal->tags()->sync($request->tags);
+            $meal->mealTypes()->sync($request->mealTypes);
 
-            $dishes = $request->input('dishes', []);
-            $days = $request->input('days', []);
+            $dishes = $request->input('dishes', []);           
+            
 
             //Remove Previous Records
             $meal->removeMealDetail($meal->id);
 
             //Insert Update Meal Detail
             for ($dish=0; $dish < count($dishes); $dish++) {
-                if ($dishes[$dish] != '') {
-                    //$meal->dishes()->attach($dishes[$dish], ['day_id' => $days[$dish]]);
+                if ($dishes[$dish] != '') {                    
                     $meal->dishes()->attach($dishes[$dish]);
                 }
             }
-/*
-            if ($request->images && $meal->media->count() > 0) {
-                foreach ($meal->media as $media) {
-                    (new ImageService())->unlinkImage($media->file_name, 'meals');
-                    $media->delete();
-                }
-            }
-            */
 
             $i = $meal->media()->count() + 1;
 

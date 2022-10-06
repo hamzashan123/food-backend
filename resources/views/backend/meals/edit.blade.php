@@ -61,7 +61,7 @@
                     <div class="col-6">
                         <div class="form-group">
                             <label for="mealTypes">Meal Types</label>
-                            <select name="mealTypes[]" id="mealTypes" class="form-control">                                
+                            <select name="mealTypes[]" id="mealTypes" class="form-control select2" multiple="multiple">
                                 @forelse($mealTypes as $mealType)
                                     <option value="{{ $mealType->id }}" 
                                         {{ in_array($mealType->id, $meal->mealTypes->pluck('id')->toArray()) ? 'selected' : null }}>
@@ -110,54 +110,72 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-header" style="background: lightblue; font-size: 18px; font-weight: bold;">
-                                Dishes
+                            <div class="card-header" style="background: #224abe; color: white; font-size: 18px; ">
+                                Dish Menu
                             </div>
 
                             <div class="card-body">
-                                <table class="table" id="dishes_table">
-                                    <thead>
-                                        <tr>
-                                            <th>Dish</th>
-                                            <th>Day</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr id="dish0">
-                                            <td>
-                                                <select name="dishes[]" id="dishes_0" class="form-control">
-                                                    <option value="">-- choose dish --</option>
-                                                    @foreach ($dishes as $dish)
-                                                        <option value="{{ $dish->id }}"
-                                                            {{ count($meal->dishes) > 0 && $dish->id == $meal->dishes[0]->id ? '' : null }}>
-                                                            {{ $dish->name }} (${{ number_format($dish->price, 2) }})
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <select name="days[]" id="days_0" class="form-control">
-                                                    <option value="">-- choose day --</option>
-                                                    @foreach ($days as $day)
-                                                        <option value="{{ $day->id }}"
-                                                        {{ count($meal->dishes) > 0 && $day->id == $meal->dishes[0]->pivot->day_id ? '' : null }}>                                                        
-                                                            {{ $day->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </td>
-                                        </tr>
-                                        <tr id="dish1"></tr>
-                                    </tbody>
-                                </table>
-
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <button id="add_row" class="btn btn-default pull-left">+ Add Row</button>
-                                        <button id='delete_row' class="pull-right btn btn-danger">- Delete Row</button>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label for="dish_id">Meals</label>
+                                            <select name="dish_id" id="dish_id" class="form-control">
+                                                <option value="">---</option>
+                                                @forelse($dishes as $dish)
+                                                    <option value="{{ $dish->id }}">
+                                                        {{ $dish->name }}
+                                                    </option>
+                                                @empty
+                                                @endforelse
+                                            </select>
+                                            @error('dish_id')<span class="text-danger">{{ $message }}</span>@enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="col-2 btn btn-primary" id="btnAddDish" style="height:50%; margin-top:32px; margin-left: 12px;">                                            
+                                        <span class="icon text-white-50">
+                                            <i class="fa fa-plus"></i>
+                                        </span>
+                                        <span class="text">Add Dish</span>
+                                        </a>                                      
+                                    </div>
+                                    
+                                </div>                                
+                                
+                            </div>
+
+                            <div class="row" style="margin-bottom: 10px;">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="card" style="margin-left:5px; margin-right:5px; padding-left: 10px; padding-right: 10px;">                                                        
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover">
+                                                        <thead>
+                                                        <tr>
+                                                            <th style="display:none;">ID</th>
+                                                            <th>Image</th>
+                                                            <th>Name</th>                                                                        
+                                                            <th>Price</th>
+                                                            <th>Tags</th>
+                                                            <th>People Type</th>                                                                                                                                  
+                                                            <th class="text-center" style="width: 30px;">Action</th>
+                                                        </tr>
+                                                        </thead>
+                                                            <tbody id="tbody_dish">
+                                                                
+                                                            </tbody>
+                                                        <tfoot>                                                                    
+                                                        </tfoot>
+                                                    </table>
+                                                </div>                                            
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            
+                     
                         </div>
                     </div>
                 </div>
@@ -326,63 +344,76 @@
             
         })
 
-        
-
-        $(document).ready(function(){
-            let row_number = 0;
-            $("#add_row").click(function(e){
-            e.preventDefault();
-            let new_row_number = row_number - 1;
-            $('#dish' + row_number).html($('#dish' + new_row_number).html()).find('td:first-child');
-            $('#dishes_table').append('<tr id="dish' + (row_number + 1) + '"></tr>');
-
-            //$('#dishes_3').removeAttr('id');
-            row_number++;
-            });
-
-            $("#delete_row").click(function(e){
-            e.preventDefault();
-            if(row_number > 1){
-                $("#dish" + (row_number - 1)).html('');
-                row_number--;
-            }
-            });
-
+        $('#btnAddDish').on('click', function(e) {
             
-            @if($meal->dishes()->count() > 0)
-                @foreach($meal->dishes as $dish)
-                    {                        
-                        let new_row_number = row_number - 1;
-
-                        debugger                        
-                        
-                        if(new_row_number >= 0) {
-                            let html = $('#dish' + new_row_number).html();
-                            html = html.replace("dishes_" + new_row_number, "dishes_" + row_number).replace("days_" + new_row_number, "days_" + row_number);
-
-                            $('#dish' + row_number).html(html).find('td:first-child');
-                            $('#dishes_table').append('<tr id="dish' + (row_number + 1) + '"></tr>');
-                        }                        
-
-                        $("#dishes_" + row_number).val('{{ $dish->id }}');
-                        $("#days_" + row_number).val('{{ $dish->pivot->day_id }}');
-
-                        row_number++;
-                    }
-                @endforeach
-                    
-                let i = 0;
-                @foreach($meal->dishes as $dish)
-                {
-                    debugger
-                    $('#dishes_' + i).removeAttr('id');
-                    $('#days_' + i).removeAttr('id');
-                    i++;
-                }
-                @endforeach
-            @endif
+            debugger        
+            let dishId = $('#dish_id').val();                
+            addDishes(dishId);
 
         });
+
+        function addDishes(dishId) {
+           
+            $.get("{{ route('admin.cities.get_dishes') }}", { dish_id: dishId }, function (data) {
+               
+               var data_ = data[0];               
+                
+               var imageUrl = "{{ asset('storage/images/dishes/') }}" + "/" + data_["first_media"]["file_name"];
+               var tags = "";
+
+               $.each(data_["tags"], function (index, value) {
+                   tags+= value["name"] + ", ";
+               });
+
+               tags = tags.slice(0,-2);                
+               //var idtd_ = '<td style="display:none;">' + data_["id"] + '</td>'
+               var idtd_ = '<td style="display:none;"> <input type="number" name="dishes[]" value="' + data_["id"] + '" class="form-control"</td>'
+               var imagetd_ = '<td><img src=' + imageUrl + ' height="100" style="object-fit: contain;" alt="' + data_["name"] + '"></td>';
+               var nametd_ = '<td>' + data_["name"] + '</td>'
+               var pricetd_ = '<td>' + data_["price"] + '</td>'
+               var tagstd_ = '<td>' + tags + '</td>'
+               var peopletypetd_ = '<td>' + data_["people_type"]["name"] + '</td>'
+               
+               var actiontd_ = '<td><a class="btn btn-sm btn-danger" onClick="deleteDish(tr_id_' + data_["id"] + ')" style="background: white; color: red;"><i class="fa fa-trash"></i></a></td>';
+               var tr = '<tr id="tr_id_' + data_["id"] + '">' + idtd_ + imagetd_ + nametd_ +  pricetd_ + tagstd_ + peopletypetd_ + actiontd_ + '</tr>';
+               debugger
+               
+               if(getHTML("tr_id_" + data_["id"])) {                        
+                   $("#tbody_dish").append(tr);
+               }  
+
+           }, "json");
+        }
+
+        function deleteDish(rowid) {
+            debugger
+            $("#" + rowid.id).remove();
+        }
+
+        function getHTML(trid) {
+            debugger
+            var returnVal = false;
+
+            if($("#" + trid).length == 0) {
+                var returnVal = true;
+            }
+
+            return returnVal;
+        }
+
+        function GetReadyDocuments() {           
+
+            @if($meal->dishes()->count() > 0)
+                @foreach($meal->dishes as $dish)
+                    {
+                        let dishId = '{{ $dish->id }}';
+                        addDishes(dishId);
+                    }
+                @endforeach
+            @endif
+        }
+
+        GetReadyDocuments();
 
     </script>
 @endsection
