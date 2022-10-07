@@ -50,8 +50,8 @@
                         </td>
                         <td><a href="{{ route('admin.dishes.show', $dish->id) }}">{{ $dish->name }}</a></td>                        
                         <td>SR {{ $dish->price }}</td>
-                        <td class="text-danger">{{ $dish->tags->pluck('name')->join(', ') }}</td>
-                        <td class="text-danger">{{ $dish->ingrediants->pluck('name')->join(', ') }}</td>
+                        <td class="text-danger"><span class="badge badge-danger">{{ $dish->tags->pluck('name')->join(', ') }}</span></td>
+                        <td class="text-danger"><span class="badge badge-danger">{{ $dish->ingrediants->pluck('name')->join(', ') }}</span></td>
                         <td>{{ $dish->peopleType ? $dish->peopleType->name : NULL }}</td>
                         <td>{{ $dish->status }}</td>
                         <td>{{ $dish->created_at }}</td>
