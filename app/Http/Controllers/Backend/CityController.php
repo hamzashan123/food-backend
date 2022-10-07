@@ -102,7 +102,7 @@ class CityController extends Controller
             ->get(['id', 'name'])
             ->toArray();
 */
-    $cities = Meal::with('peopleType', 'mealType', 'tags', 'firstMedia')->whereId($request->meal_id)->get();
+    $cities = Meal::with('peopleType', 'mealTypes', 'tags', 'firstMedia')->whereId($request->meal_id)->get();
 
         return response()->json($cities);
     }
