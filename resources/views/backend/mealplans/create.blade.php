@@ -485,21 +485,27 @@
                  
                 var imageUrl = "{{ asset('storage/images/meals/') }}" + "/" + data_["first_media"]["file_name"];
                 var tags = "";
+                var mealTypes = "";
 
                 $.each(data_["tags"], function (index, value) {
                     tags+= value["name"] + ", ";
                 });
 
-                tags = tags.slice(0,-2);                
+                $.each(data_["meal_types"], function (index, value) {
+                    mealTypes+= value["name"] + ", ";
+                });               
+                
+                tags = tags.slice(0,-2);   
+                mealTypes = mealTypes.slice(0,-2);                
                 //var idtd_ = '<td style="display:none;">' + data_["id"] + '</td>'
                 var idtd_ = '<td style="display:none;"> <input type="number" name="weekmeals[]" value="' + data_["id"] + '" class="form-control"</td>'
                 var imagetd_ = '<td><img src=' + imageUrl + ' height="100" style="object-fit: contain;" alt="' + data_["name"] + '"></td>';
                 var nametd_ = '<td>' + data_["name"] + '</td>'
                 var tagstd_ = '<td>' + tags + '</td>'
                 var peopletypetd_ = '<td>' + data_["people_type"]["name"] + '</td>'
-                var mealtypetd_ = '<td>' + data_["meal_type"]["name"] + '</td>'
+                var mealtypetd_ = '<td>' + mealTypes + '</td>'
                 var actiontd_ = '<td><a class="btn btn-sm btn-danger" onClick="deleteMeal(tr_id_' + data_["id"] + ')" style="background: white; color: red;"><i class="fa fa-trash"></i></a></td>';
-                var tr = '<tr id="tr_id_' + data_["id"] + '">' + idtd_ + imagetd_ + nametd_ + tagstd_ + peopletypetd_ + mealtypetd_ + actiontd_ + '</tr>';
+                var tr = '<tr id="tr_id_' + data_["id"] + '">' + idtd_ + imagetd_ + nametd_ + tagstd_ + peopletypetd_ + mealtypetd_ + actiontd_ + '</tr>';                
                 
                 
                 if(monday_val) {
