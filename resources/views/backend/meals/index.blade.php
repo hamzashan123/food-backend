@@ -49,7 +49,7 @@
                             @endif
                         </td>
                         <td><a href="{{ route('admin.meals.show', $meal->id) }}">{{ $meal->name }}</a></td>                        
-                        <td>SR {{ $meal->price }}</td>
+                        <td>$ {{ $meal->price }}</td>
                         <td class="text-danger">{{ $meal->tags->pluck('name')->join(', ') }}</td>
                         <td>{{ $meal->peopleType ? $meal->peopleType->name : NULL }}</td>
                         <td class="text-danger">{{ $meal->mealTypes->pluck('name')->join(', ') }}</td>                        
