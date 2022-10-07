@@ -468,7 +468,7 @@
 
         $('#btnAddMeal').on('click', function(e) {
             
-            debugger
+            
             var monday_val = $('#weekday-mon').prop('checked');
             var tuesday_val = $('#weekday-tue').prop('checked');
             var wednesday_val = $('#weekday-wed').prop('checked');
@@ -500,10 +500,10 @@
                 var mealtypetd_ = '<td>' + data_["meal_type"]["name"] + '</td>'
                 var actiontd_ = '<td><a class="btn btn-sm btn-danger" onClick="deleteMeal(tr_id_' + data_["id"] + ')" style="background: white; color: red;"><i class="fa fa-trash"></i></a></td>';
                 var tr = '<tr id="tr_id_' + data_["id"] + '">' + idtd_ + imagetd_ + nametd_ + tagstd_ + peopletypetd_ + mealtypetd_ + actiontd_ + '</tr>';
-                debugger
+                
                 
                 if(monday_val) {
-                    debugger
+                    
                     //getHTML("tbody_mon", "tr_mon_" + data_["id"])
 
                     if(getHTML("tr_mon_" + data_["id"])) {
@@ -567,12 +567,12 @@
         })
 
         function deleteMeal(rowid) {
-            debugger
+            
             $("#" + rowid.id).remove();
         }
 
         function getHTML(trid) {
-            debugger
+            
             var returnVal = false;
 
             if($("#" + trid).length == 0) {

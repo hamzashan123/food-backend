@@ -346,7 +346,7 @@
 
         $('#btnAddDish').on('click', function(e) {
             
-            debugger        
+                    
             let dishId = $('#dish_id').val();                
             addDishes(dishId);
 
@@ -376,7 +376,7 @@
                
                var actiontd_ = '<td><a class="btn btn-sm btn-danger" onClick="deleteDish(tr_id_' + data_["id"] + ')" style="background: white; color: red;"><i class="fa fa-trash"></i></a></td>';
                var tr = '<tr id="tr_id_' + data_["id"] + '">' + idtd_ + imagetd_ + nametd_ +  pricetd_ + tagstd_ + peopletypetd_ + actiontd_ + '</tr>';
-               debugger
+               
                
                if(getHTML("tr_id_" + data_["id"])) {                        
                    $("#tbody_dish").append(tr);
@@ -386,12 +386,12 @@
         }
 
         function deleteDish(rowid) {
-            debugger
+            
             $("#" + rowid.id).remove();
         }
 
         function getHTML(trid) {
-            debugger
+            
             var returnVal = false;
 
             if($("#" + trid).length == 0) {
