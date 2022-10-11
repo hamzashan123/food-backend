@@ -50,9 +50,9 @@
                         </td>
                         <td><a href="{{ route('admin.meals.show', $meal->id) }}">{{ $meal->name }}</a></td>                        
                         <td>$ {{ $meal->price }}</td>
-                        <td class="text-danger">{{ $meal->tags->pluck('name')->join(', ') }}</td>
+                        <td class="text-danger">@foreach($meal->tags as $tag) <span class="badge badge-danger">{{ $tag->name }}</span>@endforeach</td>
                         <td>{{ $meal->peopleType ? $meal->peopleType->name : NULL }}</td>
-                        <td class="text-danger">{{ $meal->mealTypes->pluck('name')->join(', ') }}</td>                        
+                        <td class="text-danger">@foreach($meal->mealTypes as $mealType) <span class="badge badge-danger">{{ $mealType->name }}</span>@endforeach</td>
                         <td>{{ $meal->status }}</td>
                         <td>{{ $meal->created_at }}</td>
                         <td>

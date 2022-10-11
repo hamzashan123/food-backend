@@ -48,7 +48,7 @@
                         </td>
                         <td><a href="{{ route('admin.mealplans.show', $mealplan->id) }}">{{ $mealplan->name }}</a></td>                        
                         <td>SR {{ $mealplan->price }}</td>
-                        <td class="text-danger">{{ $mealplan->tags->pluck('name')->join(', ') }}</td>                        
+                        <td class="text-danger">@foreach($mealplan->tags as $tag) <span class="badge badge-danger">{{ $tag->name }}</span>@endforeach</td>
                         <td>{{ $mealplan->status }}</td>
                         <td>{{ $mealplan->created_at }}</td>
                         <td>
