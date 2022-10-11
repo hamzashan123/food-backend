@@ -203,7 +203,7 @@
                 // Return `null` if the term should not be displayed
                 return null;
             }
-
+ 
             $("#tags").select2({
                 tags: true,
                 closeOnSelect: false,

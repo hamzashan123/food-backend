@@ -49,19 +49,23 @@ class MealPlanController extends Controller
         //$people_types = PeopleType::active()->get(['id', 'name']);
         
         $meals = Meal::active()->get(['id', 'name']);
+        $meal_category = MealType::active()->get(['id', 'name']);
         //$dishes = Dish::active()->get(['id', 'name', 'price']);
         //$days = Day::active()->get(['id', 'short_name', 'name']);
         $tags = Tag::active()->get(['id', 'name']);
 
         //return view('backend.meals.create', compact('tags', 'meal_types', 'people_types', 'dishes', 'days'));
-        return view('backend.mealplans.create', compact('tags', 'meals'));
+        return view('backend.mealplans.create', compact('tags', 'meal_category', 'meals'));
     }
 
     
 
     public function store(MealPlanRequest $request): RedirectResponse
     {
+        dd($request);
+
         $request->request->remove('meal_id');
+        $request->request->remove('meal_category');        
         
         $meals=[];
         if(isset($request['mondaymeals'])) {

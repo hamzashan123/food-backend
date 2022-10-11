@@ -303,7 +303,8 @@
                 var tags = "";
 
                 $.each(data_["tags"], function (index, value) {
-                    tags+= value["name"] + ", ";
+                    //tags+= value["name"] + ", ";
+                    tags+= ' <span class="badge badge-danger">' + value["name"] + '</span>';
                 });
 
                 tags = tags.slice(0,-2);                
@@ -312,7 +313,7 @@
                 var imagetd_ = '<td><img src=' + imageUrl + ' height="100" style="object-fit: contain;" alt="' + data_["name"] + '"></td>';
                 var nametd_ = '<td>' + data_["name"] + '</td>'
                 var pricetd_ = '<td>' + data_["price"] + '</td>'
-                var tagstd_ = '<td>' + tags + '</td>'
+                var tagstd_ = '<td class="text-danger">' + tags + '</td>'
                 var peopletypetd_ = '<td>' + data_["people_type"]["name"] + '</td>'
                 
                 var actiontd_ = '<td><a class="btn btn-sm btn-danger" onClick="deleteDish(tr_id_' + data_["id"] + ')" style="background: white; color: red;"><i class="fa fa-trash"></i></a></td>';

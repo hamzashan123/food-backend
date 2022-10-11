@@ -67,6 +67,25 @@
                     </div>
                 </div>
                
+                <div class="row">  
+                <div class="col-6">
+                        <div class="form-group">
+                            <label for="Weeks">Weeks</label>
+                            <select name="Weeks[]" id="Weeks" class="form-control select2" multiple="multiple">
+                                
+                                    <option value="1">Week 1</option>
+                                    <option value="2">Week 2</option>
+                                    <option value="3">Week 3</option>
+                                    <option value="4">Week 4</option>
+                                    <option value="5">Week 5</option>
+                                
+                            </select>
+                            @error('Weeks')<span class="text-danger">{{ $message }}</span>@enderror
+                        </div>
+                </div>
+                </div>
+                
+
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
@@ -117,7 +136,19 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-2 btn btn-primary" id="btnAddMeal" style="margin-left: 12px;">                                       
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label for="meal_category">Meal Category</label>
+                                            <select name="meal_category[]" id="meal_category" class="form-control select2" multiple="multiple">
+                                                @forelse($meal_category as $category)
+                                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                                @empty
+                                                @endforelse
+                                            </select>
+                                            @error('meal_category')<span class="text-danger">{{ $message }}</span>@enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-2 btn btn-primary" id="btnAddMeal" style="height:50%; margin-top:32px; margin-left: 12px;">                                       
                                             <span class="icon text-white-50">
                                                 <i class="fa fa-plus"></i>
                                             </span>
@@ -172,7 +203,7 @@
                                                                         <th>Name</th>                                                                        
                                                                         <th>Tags</th>                   
                                                                         <th>People Type</th>
-                                                                        <th>Meal Type</th>                                                                        
+                                                                        <th>Meal Category</th>                                                                        
                                                                         <th class="text-center" style="width: 30px;">Action</th>
                                                                     </tr>
                                                                     </thead>
@@ -196,7 +227,7 @@
                                                                         <th>Name</th>                                                                        
                                                                         <th>Tags</th>                   
                                                                         <th>People Type</th>
-                                                                        <th>Meal Type</th>                                                                        
+                                                                        <th>Meal Category</th>                                                                        
                                                                         <th class="text-center" style="width: 30px;">Action</th>
                                                                     </tr>
                                                                     </thead>
@@ -220,7 +251,7 @@
                                                                         <th>Name</th>                                                                        
                                                                         <th>Tags</th>                   
                                                                         <th>People Type</th>
-                                                                        <th>Meal Type</th>                                                                        
+                                                                        <th>Meal Category</th>                                                                        
                                                                         <th class="text-center" style="width: 30px;">Action</th>
                                                                     </tr>
                                                                     </thead>
@@ -244,7 +275,7 @@
                                                                         <th>Name</th>                                                                        
                                                                         <th>Tags</th>                   
                                                                         <th>People Type</th>
-                                                                        <th>Meal Type</th>                                                                        
+                                                                        <th>Meal Category</th>                                                                        
                                                                         <th class="text-center" style="width: 30px;">Action</th>
                                                                     </tr>
                                                                     </thead>
@@ -268,7 +299,7 @@
                                                                         <th>Name</th>                                                                        
                                                                         <th>Tags</th>                   
                                                                         <th>People Type</th>
-                                                                        <th>Meal Type</th>                                                                        
+                                                                        <th>Meal Category</th>                                                                        
                                                                         <th class="text-center" style="width: 30px;">Action</th>
                                                                     </tr>
                                                                     </thead>
@@ -292,7 +323,7 @@
                                                                         <th>Name</th>                                                                        
                                                                         <th>Tags</th>                   
                                                                         <th>People Type</th>
-                                                                        <th>Meal Type</th>                                                                        
+                                                                        <th>Meal Category</th>                                                                        
                                                                         <th class="text-center" style="width: 30px;">Action</th>
                                                                     </tr>
                                                                     </thead>
@@ -316,7 +347,7 @@
                                                                         <th>Name</th>                                                                        
                                                                         <th>Tags</th>                   
                                                                         <th>People Type</th>
-                                                                        <th>Meal Type</th>                                                                        
+                                                                        <th>Meal Category</th>                                                                        
                                                                         <th class="text-center" style="width: 30px;">Action</th>
                                                                     </tr>
                                                                     </thead>
@@ -452,9 +483,23 @@
                 minimumResultsForSearch: Infinity,
                 matcher: matchStart
             });
-
+/*
             $("#mealTypes").select2({
                 tags: true,
+                closeOnSelect: false,
+                minimumResultsForSearch: Infinity,
+                matcher: matchStart
+            });
+*/
+            $("#meal_category").select2({
+                meal_category: true,
+                closeOnSelect: false,
+                minimumResultsForSearch: Infinity,
+                matcher: matchStart
+            });
+
+            $("#Weeks").select2({
+                Weeks: true,
                 closeOnSelect: false,
                 minimumResultsForSearch: Infinity,
                 matcher: matchStart
@@ -468,7 +513,21 @@
 
         $('#btnAddMeal').on('click', function(e) {
             
+            debugger
+
+            //var categoryId = $('#meal_category').val();
+            let mealId = $('#meal_id').val(); 
+
+            var meal_category = $('#meal_category').select2('data');
             
+
+            if(meal_category.length > 0) {
+                AddMeal(mealId, meal_category);
+            }            
+        })
+
+        function AddMeal(mealId, mealCategory) {
+
             var monday_val = $('#weekday-mon').prop('checked');
             var tuesday_val = $('#weekday-tue').prop('checked');
             var wednesday_val = $('#weekday-wed').prop('checked');
@@ -478,7 +537,7 @@
             var sunday_val = $('#weekday-sun').prop('checked');
 
 
-            let mealId = $('#meal_id').val();                
+                           
             $.get("{{ route('admin.cities.get_cities') }}", { meal_id: mealId }, function (data) {
                
                 var data_ = data[0];               
@@ -486,26 +545,33 @@
                 var imageUrl = "{{ asset('storage/images/meals/') }}" + "/" + data_["first_media"]["file_name"];
                 var tags = "";
                 var mealTypes = "";
+                var categoryIds = "";
 
                 $.each(data_["tags"], function (index, value) {
-                    tags+= value["name"] + ", ";
+                    //tags+= value["name"] + ", ";
+                    tags+= ' <span class="badge badge-danger">' + value["name"] + '</span>';
                 });
 
-                $.each(data_["meal_types"], function (index, value) {
-                    mealTypes+= value["name"] + ", ";
-                });               
+                $.each(mealCategory, function (index, value) {
+                    debugger
+                    mealTypes+= ' <span class="badge badge-danger">' + value["text"] + '</span>';
+                    categoryIds += value["id"] + ", ";
+                });
+
                 
                 tags = tags.slice(0,-2);   
-                mealTypes = mealTypes.slice(0,-2);                
+                //mealTypes = mealTypes.slice(0,-2);                
+                categoryIds = categoryIds.slice(0,-2);                
                 //var idtd_ = '<td style="display:none;">' + data_["id"] + '</td>'
                 var idtd_ = '<td style="display:none;"> <input type="number" name="weekmeals[]" value="' + data_["id"] + '" class="form-control"</td>'
+                var categoryidtd_ = '<td style="display:none;"> <input type="number" name="weekmeals_category[]" value="' + categoryIds + '" class="form-control"</td>'
                 var imagetd_ = '<td><img src=' + imageUrl + ' height="100" style="object-fit: contain;" alt="' + data_["name"] + '"></td>';
                 var nametd_ = '<td>' + data_["name"] + '</td>'
-                var tagstd_ = '<td>' + tags + '</td>'
+                var tagstd_ = '<td class="text-danger">' + tags + '</td>'
                 var peopletypetd_ = '<td>' + data_["people_type"]["name"] + '</td>'
-                var mealtypetd_ = '<td>' + mealTypes + '</td>'
+                var mealtypetd_ = '<td class="text-danger">' + mealTypes + '</td>'
                 var actiontd_ = '<td><a class="btn btn-sm btn-danger" onClick="deleteMeal(tr_id_' + data_["id"] + ')" style="background: white; color: red;"><i class="fa fa-trash"></i></a></td>';
-                var tr = '<tr id="tr_id_' + data_["id"] + '">' + idtd_ + imagetd_ + nametd_ + tagstd_ + peopletypetd_ + mealtypetd_ + actiontd_ + '</tr>';                
+                var tr = '<tr id="tr_id_' + data_["id"] + '">' + idtd_ + categoryidtd_ + imagetd_ + nametd_ + tagstd_ + peopletypetd_ + mealtypetd_ + actiontd_ + '</tr>';                
                 
                 
                 if(monday_val) {
@@ -516,6 +582,7 @@
                         var trVal = tr.replace("tr_id","tr_mon");
                         trVal = trVal.replace("tr_id","tr_mon");
                         trVal = trVal.replace("weekmeals[]","mondaymeals[]");
+                        trVal = trVal.replace("weekmeals_category[]","mondaymeals_cat[]");
                         $("#tbody_mon").append(trVal);
                     }                    
                 }
@@ -524,6 +591,7 @@
                         var trVal = tr.replace("tr_id","tr_tue");
                         trVal = trVal.replace("tr_id","tr_tue");
                         trVal = trVal.replace("weekmeals[]","tuesdaymeals[]");
+                        trVal = trVal.replace("weekmeals_category[]","tuesdaymeals_cat[]");
                         $("#tbody_tue").append(trVal);
                     }                    
                 }
@@ -532,6 +600,7 @@
                         var trVal = tr.replace("tr_id","tr_wed");
                         trVal = trVal.replace("tr_id","tr_wed");
                         trVal = trVal.replace("weekmeals[]","wednesdaymeals[]");
+                        trVal = trVal.replace("weekmeals_category[]","wednesdaymeals_cat[]");
                         $("#tbody_wed").append(trVal);
                     }
                 }
@@ -540,6 +609,7 @@
                         var trVal = tr.replace("tr_id","tr_thu");
                         trVal = trVal.replace("tr_id","tr_thu");
                         trVal = trVal.replace("weekmeals[]","thursdaymeals[]");
+                        trVal = trVal.replace("weekmeals_category[]","thursdaymeals_cat[]");
                         $("#tbody_thu").append(trVal);
                     }                    
                 }
@@ -548,6 +618,7 @@
                         var trVal = tr.replace("tr_id","tr_fri");
                         trVal = trVal.replace("tr_id","tr_fri");
                         trVal = trVal.replace("weekmeals[]","fridaymeals[]");
+                        trVal = trVal.replace("weekmeals_category[]","fridaymeals_cat[]");
                         $("#tbody_fri").append(trVal);
                     }                    
                 }
@@ -556,6 +627,7 @@
                         var trVal = tr.replace("tr_id","tr_sat");
                         trVal = trVal.replace("tr_id","tr_sat");
                         trVal = trVal.replace("weekmeals[]","saturdaymeals[]");
+                        trVal = trVal.replace("weekmeals_category[]","saturdaymeals_cat[]");
                         $("#tbody_sat").append(trVal);
                     }
                 }
@@ -564,13 +636,13 @@
                         var trVal = tr.replace("tr_id","tr_sun");
                         trVal = trVal.replace("tr_id","tr_sun");
                         trVal = trVal.replace("weekmeals[]","sundaymeals[]");
+                        trVal = trVal.replace("weekmeals_category[]","sundaymeals_cat[]");
                         $("#tbody_sun").append(trVal);
                     }                    
                 }
 
             }, "json");
-
-        })
+        }
 
         function deleteMeal(rowid) {
             
