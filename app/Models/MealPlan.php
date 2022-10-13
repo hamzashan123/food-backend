@@ -61,6 +61,11 @@ class MealPlan extends Model
         return $this->belongsToMany(Tag::class, 'meal_plan_tags', 'meal_plan_id', 'tag_id');
     }
 
+    public function weeks(): BelongsToMany
+    {
+        return $this->belongsToMany(Week::class, 'meal_plan_weeks', 'meal_plan_id', 'week_id');
+    }
+
     //public function mealDays(): BelongsToMany
     //{
     //    return $this->belongsToMany(Day::class, 'meal_details', 'meal_id')->distinct()->orderBy('day_id','asc')->withPivot(['meal_id']);
@@ -70,6 +75,10 @@ class MealPlan extends Model
     {
         //return $this->belongsToMany(Dish::class, 'meal_details', 'meal_id', 'dish_id')->withPivot(['day_id']);
         return $this->belongsToMany(Meal::class, 'meal_plan_details', 'meal_plan_id', 'meal_id')->withPivot(['day_id']);;
+    }
+
+    public function mealPlanCategories() {
+        return $this->belongsToMany(Meal::class, 'meal_plan_meal_category', 'meal_plan_id', 'meal_id')->withPivot(['day_id'])->withPivot(['meal_category']);
     }
 /*
     public function days()
