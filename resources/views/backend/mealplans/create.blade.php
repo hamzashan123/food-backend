@@ -95,7 +95,7 @@
 
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-6">
+                                    <div class="col-4">
                                         <div class="form-group">
                                             <label for="meal_id">Meals</label>
                                             <select name="meal_id" id="meal_id" class="form-control">
@@ -110,9 +110,21 @@
                                             @error('meal_id')<span class="text-danger">{{ $message }}</span>@enderror
                                         </div>
                                     </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label for="meal_category">Meal Category</label>
+                                            <select name="meal_category[]" id="meal_category" class="form-control select2" multiple="multiple">
+                                                @forelse($meal_category as $category)
+                                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                                @empty
+                                                @endforelse
+                                            </select>
+                                            @error('meal_category')<span class="text-danger">{{ $message }}</span>@enderror
+                                        </div>
+                                    </div>
 
 
-                                    <div class="col-6">
+                                    <div class="col-4">
                                         <div class="form-group">
                                             <label for="day_id">Days</label>
                                             <div class="weekDays-selector">
@@ -136,18 +148,7 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            <label for="meal_category">Meal Category</label>
-                                            <select name="meal_category[]" id="meal_category" class="form-control select2" multiple="multiple">
-                                                @forelse($meal_category as $category)
-                                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                                @empty
-                                                @endforelse
-                                            </select>
-                                            @error('meal_category')<span class="text-danger">{{ $message }}</span>@enderror
-                                        </div>
-                                    </div>
+                                   
                                     <div class="col-2 btn btn-primary" id="btnAddMeal" style="height:50%; margin-top:32px; margin-left: 12px;">                                       
                                             <span class="icon text-white-50">
                                                 <i class="fa fa-plus"></i>
