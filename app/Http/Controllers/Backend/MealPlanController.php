@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tag;
+use App\Models\Week;
 use App\Services\ImageService;
 use App\Traits\ImageUploadTrait;
 use Illuminate\Contracts\View\View;
@@ -53,20 +54,29 @@ class MealPlanController extends Controller
         //$dishes = Dish::active()->get(['id', 'name', 'price']);
         //$days = Day::active()->get(['id', 'short_name', 'name']);
         $tags = Tag::active()->get(['id', 'name']);
+        $weeks = Week::get(['id', 'name']);
 
         //return view('backend.meals.create', compact('tags', 'meal_types', 'people_types', 'dishes', 'days'));
-        return view('backend.mealplans.create', compact('tags', 'meal_category', 'meals'));
+        return view('backend.mealplans.create', compact('tags', 'weeks', 'meal_category', 'meals'));
     }
 
     
 
     public function store(MealPlanRequest $request): RedirectResponse
     {
-        dd($request);
+        
 
         $request->request->remove('meal_id');
         $request->request->remove('meal_category');        
+
+
+        //$request->request->remove('meal_cat');
+        //$mdealDetail_MealCategories = json_decode($request['meal_cat'], true);
+        $mdealDetail_MealCategories = json_decode(json_decode($request['meal_cat']),true);
         
+     
+        //dd($request);
+
         $meals=[];
         if(isset($request['mondaymeals'])) {
             for ($m=0; $m < count($request['mondaymeals']); $m++) {                
@@ -111,7 +121,9 @@ class MealPlanController extends Controller
             }            
         }
 
+        
         $request->request->add(['meals' => $meals]);
+        $request->request->add(['mealPlanCategories' => $mdealDetail_MealCategories]);
         $request->request->remove('mondaymeals');
         $request->request->remove('tuesdaymeals');
         $request->request->remove('wednesdaymeals');
@@ -119,6 +131,12 @@ class MealPlanController extends Controller
         $request->request->remove('fridaymeals');
         $request->request->remove('saturdaymeals');
         $request->request->remove('sundaymeals');
+
+        $request->request->remove('meal_cat');
+        //$request->request->remove('Weeks');
+        
+      
+       
         //dd($request->all());
         //$mondayExist = (isset($request['mondaymeals'])) ? $request['mondaymeals'] : 'not found';
 
@@ -134,10 +152,12 @@ class MealPlanController extends Controller
            //dd($request->all());
            //////////////dd($request['txtMondayMeals']);
 
-           $meal = MealPlan::create($request->except('tags', 'images', 'meals', '_token'));
+           $meal = MealPlan::create($request->except('tags', 'weeks', 'images', 'meals', 'mealPlanCategories', '_token'));
 
             $meal->tags()->attach($request->tags);
+            $meal->weeks()->attach($request->weeks);
             $meal->meals()->attach($request->meals);
+            $meal->mealPlanCategories()->attach($request->mealPlanCategories);
             //$mondayMeals;
             //$mondayMeals->implode($request['txtMondayMeals'], ',');
             //dd($request->all());

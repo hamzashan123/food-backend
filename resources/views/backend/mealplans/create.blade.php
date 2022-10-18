@@ -70,19 +70,18 @@
                 <div class="row">  
                 <div class="col-6">
                         <div class="form-group">
-                            <label for="Weeks">Weeks</label>
-                            <select name="Weeks[]" id="Weeks" class="form-control select2" multiple="multiple">
-                                
-                                    <option value="1">Week 1</option>
-                                    <option value="2">Week 2</option>
-                                    <option value="3">Week 3</option>
-                                    <option value="4">Week 4</option>
-                                    <option value="5">Week 5</option>
-                                
+                            <label for="weeks">Weeks</label>
+                            <select name="weeks[]" id="weeks" class="form-control select2" multiple="multiple">                                    
+                                    @forelse($weeks as $week)
+                                    <option value="{{ $week->id }}">{{ $week->name }}</option>
+                                    @empty
+                                    @endforelse
                             </select>
-                            @error('Weeks')<span class="text-danger">{{ $message }}</span>@enderror
+                            @error('weeks')<span class="text-danger">{{ $message }}</span>@enderror
                         </div>
                 </div>
+
+                <input type="hidden" id="meal_cat" name="meal_cat" class="form-control">
                 </div>
                 
 
@@ -499,8 +498,8 @@
                 matcher: matchStart
             });
 
-            $("#Weeks").select2({
-                Weeks: true,
+            $("#weeks").select2({
+                weeks: true,
                 closeOnSelect: false,
                 minimumResultsForSearch: Infinity,
                 matcher: matchStart
@@ -526,6 +525,21 @@
                 AddMeal(mealId, meal_category);
             }            
         })
+
+        var weekmeals_cate = [];
+
+        function AddMealCategoryInJSON(mealid, dayid, categories) {
+            $.each(categories, function (index, value) {
+                    weekmeals_cate.push({
+                                        'meal_id' : mealid, 
+                                        'day_id' : dayid, 
+                                        'meal_category' : (value["id"] == "1" ? 1 : value["id"] == "2" ? 2 : value["id"] == "3" ? 3 : value["id"] == "4" ? 4 : 0) 
+                                    });
+                });            
+
+            const myJSON = JSON.stringify(weekmeals_cate);
+            $("[name=meal_cat]").val(JSON.stringify(myJSON));
+        }
 
         function AddMeal(mealId, mealCategory) {
 
@@ -556,89 +570,91 @@
                 $.each(mealCategory, function (index, value) {
                     debugger
                     mealTypes+= ' <span class="badge badge-danger">' + value["text"] + '</span>';
-                    categoryIds += value["id"] + ", ";
+                    categoryIds += value["id"] + ", ";                    
                 });
-
                 
-                tags = tags.slice(0,-2);   
+                tags = tags.slice(0,-2);
                 //mealTypes = mealTypes.slice(0,-2);                
-                categoryIds = categoryIds.slice(0,-2);                
-                //var idtd_ = '<td style="display:none;">' + data_["id"] + '</td>'
-                var idtd_ = '<td style="display:none;"> <input type="number" name="weekmeals[]" value="' + data_["id"] + '" class="form-control"</td>'
-                var categoryidtd_ = '<td style="display:none;"> <input type="number" name="weekmeals_category[]" value="' + categoryIds + '" class="form-control"</td>'
+                categoryIds = categoryIds.slice(0,-2);
+                
+                var idtd_ = '<td style="display:none;"> <input type="number" name="weekmeals[]" value="' + data_["id"] + '" class="form-control"</td>'                
                 var imagetd_ = '<td><img src=' + imageUrl + ' height="100" style="object-fit: contain;" alt="' + data_["name"] + '"></td>';
                 var nametd_ = '<td>' + data_["name"] + '</td>'
                 var tagstd_ = '<td class="text-danger">' + tags + '</td>'
                 var peopletypetd_ = '<td>' + data_["people_type"]["name"] + '</td>'
                 var mealtypetd_ = '<td class="text-danger">' + mealTypes + '</td>'
                 var actiontd_ = '<td><a class="btn btn-sm btn-danger" onClick="deleteMeal(tr_id_' + data_["id"] + ')" style="background: white; color: red;"><i class="fa fa-trash"></i></a></td>';
-                var tr = '<tr id="tr_id_' + data_["id"] + '">' + idtd_ + categoryidtd_ + imagetd_ + nametd_ + tagstd_ + peopletypetd_ + mealtypetd_ + actiontd_ + '</tr>';                
+                var tr = '<tr id="tr_id_' + data_["id"] + '">' + idtd_ + imagetd_ + nametd_ + tagstd_ + peopletypetd_ + mealtypetd_ + actiontd_ + '</tr>';                
                 
                 
                 if(monday_val) {
-                    
-                    //getHTML("tbody_mon", "tr_mon_" + data_["id"])
-
                     if(getHTML("tr_mon_" + data_["id"])) {
                         var trVal = tr.replace("tr_id","tr_mon");
                         trVal = trVal.replace("tr_id","tr_mon");
-                        trVal = trVal.replace("weekmeals[]","mondaymeals[]");
-                        trVal = trVal.replace("weekmeals_category[]","mondaymeals_cat[]");
+                        trVal = trVal.replace("weekmeals[]","mondaymeals[]");                        
                         $("#tbody_mon").append(trVal);
+
+                        AddMealCategoryInJSON(data_["id"], 1, mealCategory);
                     }                    
                 }
                 if(tuesday_val) {
                     if(getHTML("tr_tue_" + data_["id"])) {
                         var trVal = tr.replace("tr_id","tr_tue");
                         trVal = trVal.replace("tr_id","tr_tue");
-                        trVal = trVal.replace("weekmeals[]","tuesdaymeals[]");
-                        trVal = trVal.replace("weekmeals_category[]","tuesdaymeals_cat[]");
+                        trVal = trVal.replace("weekmeals[]","tuesdaymeals[]");                        
                         $("#tbody_tue").append(trVal);
+
+                        AddMealCategoryInJSON(data_["id"], 2, mealCategory);
                     }                    
                 }
                 if(wednesday_val) {
                     if(getHTML("tr_wed_" + data_["id"])) {
                         var trVal = tr.replace("tr_id","tr_wed");
                         trVal = trVal.replace("tr_id","tr_wed");
-                        trVal = trVal.replace("weekmeals[]","wednesdaymeals[]");
-                        trVal = trVal.replace("weekmeals_category[]","wednesdaymeals_cat[]");
+                        trVal = trVal.replace("weekmeals[]","wednesdaymeals[]");                        
                         $("#tbody_wed").append(trVal);
+
+                        AddMealCategoryInJSON(data_["id"], 3, mealCategory);
                     }
                 }
                 if(thursday_val) {
                     if(getHTML("tr_thu_" + data_["id"])) {
                         var trVal = tr.replace("tr_id","tr_thu");
                         trVal = trVal.replace("tr_id","tr_thu");
-                        trVal = trVal.replace("weekmeals[]","thursdaymeals[]");
-                        trVal = trVal.replace("weekmeals_category[]","thursdaymeals_cat[]");
+                        trVal = trVal.replace("weekmeals[]","thursdaymeals[]");                        
                         $("#tbody_thu").append(trVal);
+
+                        AddMealCategoryInJSON(data_["id"], 4, mealCategory);
                     }                    
                 }
                 if(friday_val) {
                     if(getHTML("tr_fri_" + data_["id"])) {
                         var trVal = tr.replace("tr_id","tr_fri");
                         trVal = trVal.replace("tr_id","tr_fri");
-                        trVal = trVal.replace("weekmeals[]","fridaymeals[]");
-                        trVal = trVal.replace("weekmeals_category[]","fridaymeals_cat[]");
+                        trVal = trVal.replace("weekmeals[]","fridaymeals[]");                        
                         $("#tbody_fri").append(trVal);
+
+                        AddMealCategoryInJSON(data_["id"], 5, mealCategory);
                     }                    
                 }
                 if(saturday_val) {
                     if(getHTML("tr_sat_" + data_["id"])) {
                         var trVal = tr.replace("tr_id","tr_sat");
                         trVal = trVal.replace("tr_id","tr_sat");
-                        trVal = trVal.replace("weekmeals[]","saturdaymeals[]");
-                        trVal = trVal.replace("weekmeals_category[]","saturdaymeals_cat[]");
+                        trVal = trVal.replace("weekmeals[]","saturdaymeals[]");                        
                         $("#tbody_sat").append(trVal);
+
+                        AddMealCategoryInJSON(data_["id"], 6, mealCategory);
                     }
                 }
                 if(sunday_val) {
                     if(getHTML("tr_sun_" + data_["id"])) {
                         var trVal = tr.replace("tr_id","tr_sun");
                         trVal = trVal.replace("tr_id","tr_sun");
-                        trVal = trVal.replace("weekmeals[]","sundaymeals[]");
-                        trVal = trVal.replace("weekmeals_category[]","sundaymeals_cat[]");
+                        trVal = trVal.replace("weekmeals[]","sundaymeals[]");                        
                         $("#tbody_sun").append(trVal);
+
+                        AddMealCategoryInJSON(data_["id"], 7, mealCategory);
                     }                    
                 }
 
@@ -646,7 +662,15 @@
         }
 
         function deleteMeal(rowid) {
+            /*
+            var 
             
+            const indexOfObject = weekmeals_cate.findIndex(object => {
+            return object.meal_id === id;
+            });
+
+            tr_mon
+            */
             $("#" + rowid.id).remove();
         }
 
