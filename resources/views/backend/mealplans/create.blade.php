@@ -167,25 +167,25 @@
                                             <div class="card-header">
                                                 <ul class="nav nav-tabs card-header-tabs" id="bologna-list" role="tablist">
                                                     <li class="nav-item">
-                                                        <a class="nav-link active" href="#monday" role="tab" aria-controls="monday" aria-selected="true">Mon Day</a>
+                                                        <a class="nav-link active" href="#monday" role="tab" aria-controls="monday" aria-selected="true">Monday</a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link"  href="#tuesday" role="tab" aria-controls="tuesday" aria-selected="false">Tues Day</a>
+                                                        <a class="nav-link"  href="#tuesday" role="tab" aria-controls="tuesday" aria-selected="false">Tuesday</a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link" href="#wednesday" role="tab" aria-controls="wednesday" aria-selected="false">Wednes Day</a>
+                                                        <a class="nav-link" href="#wednesday" role="tab" aria-controls="wednesday" aria-selected="false">Wednesday</a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link" href="#thursday" role="tab" aria-controls="thursday" aria-selected="false">Thurs Day</a>
+                                                        <a class="nav-link" href="#thursday" role="tab" aria-controls="thursday" aria-selected="false">Thursday</a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link" href="#friday" role="tab" aria-controls="friday" aria-selected="false">Fri Day</a>
+                                                        <a class="nav-link" href="#friday" role="tab" aria-controls="friday" aria-selected="false">Friday</a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link" href="#saturday" role="tab" aria-controls="saturday" aria-selected="false">Satur Day</a>
+                                                        <a class="nav-link" href="#saturday" role="tab" aria-controls="saturday" aria-selected="false">Saturday</a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link" href="#sunday" role="tab" aria-controls="sunday" aria-selected="false">Sun Day</a>
+                                                        <a class="nav-link" href="#sunday" role="tab" aria-controls="sunday" aria-selected="false">Sunday</a>
                                                     </li>
                                                 </ul>
                                             </div>
