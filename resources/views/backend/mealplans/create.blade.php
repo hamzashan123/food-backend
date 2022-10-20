@@ -96,7 +96,7 @@
                                 <div class="row">
                                     <div class="col-4">
                                         <div class="form-group">
-                                            <label for="meal_id">Meals</label>
+                                            <label for="meal_id">Select Meals</label>
                                             <select name="meal_id" id="meal_id" class="form-control">
                                                 <option value="">---</option>
                                                 @forelse($meals as $meal)

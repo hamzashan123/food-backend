@@ -53,7 +53,7 @@
                     </div>    
                     <div class="col-6">
                         <div class="form-group">
-                            <label for="mealTypes">Meal Types</label>
+                            <label for="mealTypes">Meal Category</label>
                             <select name="mealTypes[]" id="mealTypes" class="form-control select2" multiple="multiple">
                                 @forelse($mealTypes as $mealType)
                                     <option value="{{ $mealType->id }}">{{ $mealType->name }}</option>
@@ -104,7 +104,7 @@
                                 <div class="row">
                                     <div class="col-6">
                                         <div class="form-group">
-                                            <label for="dish_id">Meals</label>
+                                            <label for="dish_id">Select Dish</label>
                                             <select name="dish_id" id="dish_id" class="form-control">
                                                 <option value="">---</option>
                                                 @forelse($dishes as $dish)
