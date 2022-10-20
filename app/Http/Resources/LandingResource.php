@@ -10,11 +10,11 @@ use Auth;
 use Illuminate\Support\Facades\File;
 use App\Models\UserRole;
 use App\Http\Resources\TagResource;
-use App\Http\Resources\DaysResource;
-use App\Models\MealDetail;
-use App\Models\Day;
+use App\Http\Resources\WeekResource;
+use App\Http\Resources\IngrediantsResource;
+use App\Http\Resources\LandingMealPlanDaysResource;
 
-class MealResource extends JsonResource
+class LandingResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -24,15 +24,6 @@ class MealResource extends JsonResource
      */
     public function toArray($request)
     {
-        //$mealDays = MealDetail::where('meal_id', $this->id)->pluck('day_id');
-        //$days = Day::whereIn('id', $mealDays)->get();
-        
-        //if(count($days) > 0) {
-        //    $days->meal_id = $this->id;
-        //}
-
-        //dd(count($this->getDihesDays));
-
         $ImageArray = [];
         $rownumber = 1;
         foreach ($this->media as $image) {         
@@ -41,12 +32,12 @@ class MealResource extends JsonResource
             if (($image->file_name == 'placeholder.png')  || ($image->file_name == null)){
                 $imageurl = URL::to('/') . Storage::disk('local')->url('public/users/placeholder.png');
             } else {
-                $imageurl = URL::to('/') . Storage::disk('local')->url('public/images/meals/' .$image->file_name);
+                $imageurl = URL::to('/') . Storage::disk('local')->url('public/images/mealplans/' .$image->file_name);
             }
 
             $ImageArray[] = $imageurl;
             $rownumber = ($rownumber + 1);
-        }        
+        }  
 
         return [
             'id'=> $this->id,
@@ -55,11 +46,9 @@ class MealResource extends JsonResource
             'status'=> $this->status,
             'description'=> $this->description,
             'details'=> $this->details,
-            'peopleType'=> ($this->peopleType == null || $this->peopleType->name == null ? '' : $this->peopleType->name),
-            'mealCategory'=> ($this->mealType == null || $this->mealType->name == null ? '' : $this->mealType->name),
             'tags'=> TagResource::collection($this->tags),
-            'days'=> ($this->mealDays != null && count($this->mealDays) > 0 ? DaysResource::collection($this->mealDays) : '' ),
-            //'days'=> $this->getDihesDays,
+            'weeks'=> WeekResource::collection($this->weeks),
+            'days'=> LandingMealPlanDaysResource::collection($this->meals),
             'images'=> $ImageArray,
         ];
     }
