@@ -44,8 +44,6 @@ class MealPlanRequest extends FormRequest
                     'name' => ['required', 'max:255'],                    
                     'price' => ['required', 'numeric'],
                     'tags.*' => ['required'],
-                    'people_types_id' => ['required'],
-                    'meal_types_id' => ['required'],                    
                     'status' => ['required'],
                     'description' => ['required', 'max:1000'],
                     'details' => ['required', 'max:10000'],                    

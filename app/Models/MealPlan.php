@@ -46,9 +46,13 @@ class MealPlan extends Model
         return $query->whereStatus(true);
     }    
 
+    
     public function removeMealPlanDetail($id) {        
         $mealPlanDetail = MealPlanDetail::where('meal_plan_id', $id);
-        $mealPlanDetail->delete();        
+        $mealPlanDetail->delete();
+
+        $mealPlan_mealCategory = MealPlan_MealCategory::where('meal_plan_id', $id);
+        $mealPlan_mealCategory->delete();
     }
 
     //public function mealTypes(): BelongsToMany
@@ -56,10 +60,7 @@ class MealPlan extends Model
     //    return $this->belongsTo(MealType::class, 'meal_plan_types','meal_plan_id','meal_type_id');
     //}
 
-    public function tags(): BelongsToMany
-    {
-        return $this->belongsToMany(Tag::class, 'meal_plan_tags', 'meal_plan_id', 'tag_id');
-    }
+    
 
     public function weeks(): BelongsToMany
     {
@@ -100,6 +101,11 @@ class MealPlan extends Model
     {
         return $this->morphOne(Media::class, 'mediable')
             ->orderBy('file_sort', 'asc');
+    }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'meal_plan_tags', 'meal_plan_id', 'tag_id');
     }
 
     /*

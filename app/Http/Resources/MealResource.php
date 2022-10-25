@@ -10,7 +10,9 @@ use Auth;
 use Illuminate\Support\Facades\File;
 use App\Models\UserRole;
 use App\Http\Resources\TagResource;
+use App\Http\Resources\MealCategoriesResource;
 use App\Http\Resources\DaysResource;
+use App\Http\Resources\DishResource;
 use App\Models\MealDetail;
 use App\Models\Day;
 
@@ -46,8 +48,8 @@ class MealResource extends JsonResource
 
             $ImageArray[] = $imageurl;
             $rownumber = ($rownumber + 1);
-        }        
-
+        }
+        
         return [
             'id'=> $this->id,
             'name'=> $this->name,
@@ -55,11 +57,10 @@ class MealResource extends JsonResource
             'status'=> $this->status,
             'description'=> $this->description,
             'details'=> $this->details,
-            'peopleType'=> ($this->peopleType == null || $this->peopleType->name == null ? '' : $this->peopleType->name),
-            'mealCategory'=> ($this->mealType == null || $this->mealType->name == null ? '' : $this->mealType->name),
-            'tags'=> TagResource::collection($this->tags),
-            'days'=> ($this->mealDays != null && count($this->mealDays) > 0 ? DaysResource::collection($this->mealDays) : '' ),
-            //'days'=> $this->getDihesDays,
+            'peopleType'=> ($this->peopleType == null || $this->peopleType->name == null ? '' : $this->peopleType->name),            
+            'mealCategory'=> MealCategoriesResource::collection($this->mealTypes),
+            'tags'=> TagResource::collection($this->tags),            
+            'dishes'=> DishResource::collection($this->dishes),
             'images'=> $ImageArray,
         ];
     }

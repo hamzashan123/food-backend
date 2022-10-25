@@ -39,6 +39,26 @@ class LandingResource extends JsonResource
             $rownumber = ($rownumber + 1);
         }  
 
+        //$mondayMeals = $this->meals;
+        $mondayMeals = $this->meals()->wherePivot('day_id', 1)->get();
+        $tuesdayMeals = $this->meals()->wherePivot('day_id', 2)->get();        
+        $wednesdayMeals = $this->meals()->wherePivot('day_id', 3)->get();
+        $thursdayMeals = $this->meals()->wherePivot('day_id', 4)->get();
+        $fridayMeals = $this->meals()->wherePivot('day_id', 5)->get();
+        $saturdayMeals = $this->meals()->wherePivot('day_id', 6)->get();
+        $sundayMeals = $this->meals()->wherePivot('day_id', 7)->get();
+        
+        //$daysMeals = [
+                //'Monday_Meals' => $mondayMeals,
+                //'Tuesday_Meals' => $tuesdayMeals,
+                /*
+                'Wednesday_Meals' => $wednesdayMeals,
+                'Thursday_Meals' => $thursdayMeals,
+                'Friday_Meals' => $fridayMeals,
+                'Saturday_Meals' => $saturdayMeals,
+                'Sunday_Meals' => $sundayMeals,*/
+          //  ];
+
         return [
             'id'=> $this->id,
             'name'=> $this->name,
@@ -48,7 +68,13 @@ class LandingResource extends JsonResource
             'details'=> $this->details,
             'tags'=> TagResource::collection($this->tags),
             'weeks'=> WeekResource::collection($this->weeks),
-            'days'=> LandingMealPlanDaysResource::collection($this->meals),
+            'Monday_Meals'=> LandingMealPlanDaysResource::collection($mondayMeals),
+            'Tuesday_Meals'=> LandingMealPlanDaysResource::collection($tuesdayMeals),
+            'Wednesday_Meals'=> LandingMealPlanDaysResource::collection($wednesdayMeals),
+            'Thursday_Meals'=> LandingMealPlanDaysResource::collection($thursdayMeals),
+            'Friday_Meals'=> LandingMealPlanDaysResource::collection($fridayMeals),
+            'Saturday_Meals'=> LandingMealPlanDaysResource::collection($saturdayMeals),
+            'Sunday_Meals'=> LandingMealPlanDaysResource::collection($sundayMeals),
             'images'=> $ImageArray,
         ];
     }

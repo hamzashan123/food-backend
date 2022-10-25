@@ -21,14 +21,15 @@
             </div>
         </div>
         <div class="card-body">
-            <form action="{{ route('admin.mealplans.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.mealplans.update', $mealplan) }}" method="POST" enctype="multipart/form-data">
                 @csrf
+                @method('PATCH')
                 <div class="row">
                     <div class="col-8">
                         <div class="form-group">
                             <label for="name" class="text-small text-uppercase">{{ __('Meal Plan Name') }}</label>
                             <input id="name" type="text" class="form-control form-control-lg" name="name"
-                                   value="{{ old('name') }}">
+                                   value="{{ old('name', $mealplan->name) }}">
                             @error('name')<span class="text-danger">{{ $message }}</span>@enderror
                         </div>
                     </div>
@@ -36,7 +37,7 @@
                         <div class="form-group">
                             <label for="price" class="text-small text-uppercase">{{ __('Price') }}</label>
                             <input id="price" type="number" class="form-control form-control-lg" name="price"
-                                   value="{{ old('price') }}" >
+                                   value="{{ old('price', $mealplan->price) }}" >
                             @error('price')<span class="text-danger">{{ $message }}</span>@enderror
                         </div>
                     </div>                    
@@ -47,7 +48,10 @@
                             <label for="tags">Tags</label>
                             <select name="tags[]" id="tags" class="form-control select2" multiple="multiple">
                                 @forelse($tags as $tag)
-                                    <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                    <option value="{{ $tag->id }}"
+                                        {{ in_array($tag->id, $mealplan->tags->pluck('id')->toArray()) ? 'selected' : null }}>
+                                        {{ $tag->name }}
+                                    </option>
                                 @empty
                                 @endforelse
                             </select>
@@ -58,9 +62,12 @@
                         <div class="form-group">
                             <label for="status">Status</label>
                             <select name="status" id="status" class="form-control">
-                                <option value="">---</option>
-                                <option value="1" {{ old('status') == "1" ? 'selected' : null }}>Active</option>
-                                <option value="0" {{ old('status') == "0" ? 'selected' : null }}>Inactive</option>
+                                <option value="1" {{ old('status', $mealplan->status) == "Active" ? 'selected' : null }}>
+                                    Active
+                                </option>
+                                <option value="0" {{ old('status', $mealplan->status) == "Inactive" ? 'selected' : null }}>
+                                    Inactive
+                                </option>
                             </select>                            
                             @error('status')<span class="text-danger">{{ $message }}</span>@enderror
                         </div>
@@ -73,7 +80,10 @@
                             <label for="weeks">Weeks</label>
                             <select name="weeks[]" id="weeks" class="form-control select2" multiple="multiple">                                    
                                     @forelse($weeks as $week)
-                                    <option value="{{ $week->id }}">{{ $week->name }}</option>
+                                    <option value="{{ $week->id }}"
+                                        {{ in_array($week->id, $mealplan->weeks->pluck('id')->toArray()) ? 'selected' : null }}>
+                                        {{ $week->name }}
+                                    </option>
                                     @empty
                                     @endforelse
                             </select>
@@ -376,7 +386,7 @@
                     <div class="col-12">
                         <div class="form-group">
                             <label for="description" class="text-small text-uppercase">{{ __('Description') }}</label>
-                            <textarea name="description" rows="3" class="form-control summernote">{!! old('description') !!}</textarea>
+                            <textarea name="description" rows="3" class="form-control summernote">{!! old('description', $mealplan->description) !!}</textarea>
                             @error('description')<span class="text-danger">{{ $message }}</span>@enderror
                         </div>
                     </div>
@@ -386,7 +396,7 @@
                     <div class="col-12">
                         <div class="form-group">
                             <label for="details" class="text-small text-uppercase">{{ __('Details') }}</label>
-                            <textarea name="details" rows="3" class="form-control summernote">{!! old('details') !!}</textarea>
+                            <textarea name="details" rows="3" class="form-control summernote">{!! old('details', $mealplan->details) !!}</textarea>
                             @error('details')<span class="text-danger">{{ $message }}</span>@enderror
                         </div>
                     </div>
@@ -396,14 +406,14 @@
                         <label for="images">images</label>
                         <br>
                         <div class="file-loading">
-                            <input type="file" name="images[]" id="product-images" class="note-icon-picture" multiple="multiple">
+                            <input type="file" name="images[]" id="product-images" class="file-input-overview" multiple="multiple">
                         </div>
                         @error('images')<span class="text-danger">{{ $message }}</span>@enderror
                     </div>
                 </div>
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">
-                        {{ __('Create') }}
+                        {{ __('Update') }}
                     </button>
                 </div>
             </form>
@@ -438,8 +448,189 @@
                 showRemove: false,
                 showUpload: false,
                 overwriteInitial: false,
+                initialPreview: [
+                    @if($mealplan->media()->count() > 0)
+                        @foreach($mealplan->media as $media)
+                            "{{ asset('storage/images/mealplans/' . $media->file_name) }}",
+                        @endforeach
+                    @endif
+                ],
+                initialPreviewAsData: true,
+                initialPreviewFileType: 'image',
+                initialPreviewConfig: [
+                        @if($mealplan->media()->count() > 0)
+                        
+                            @foreach($mealplan->media as $media)
+                                {
+                                    caption: "{{ $media->file_name }}",
+                                    size: "{{ $media->file_size }}",
+                                    width: "120px",
+                                    url: "{{ route('admin.mealplans.remove_image', [
+                                                            'image_id' => $media->id,
+                                                            'mealplan_id' => $mealplan->id,
+                                                            '_token' => csrf_token()
+                                                        ]) }}",
+                                    key: {{ $media->id }}
+                                },
+                            @endforeach
+                            
+                        @endif
+                ]
             });
 
+            
+            loadMeals();
+            function loadMeals() {
+                
+                @if($mealplan->meals()->count() > 0) 
+                    @foreach($mealplan->meals as $meal) {
+                        var mealid = {{ $meal->pivot->meal_id }};
+                        var day_id = {{ $meal->pivot->day_id }};
+                        SetMealCategory(mealid, day_id);
+                    }
+                    @endforeach
+                @endif
+                
+            }
+
+            function SetMealCategory(mealId, dayId) {
+
+                var meal_categories = [];
+                switch(dayId) {
+                    
+                    case 1:
+                            @if($mealPlanMon->count() > 0) 
+                                @foreach($mealPlanMon as $meal) {
+                                    
+                                    var meal_id = {{ $meal->pivot->meal_id }};
+                                    var day_id = {{ $meal->pivot->day_id }};
+
+                                    if(meal_id == mealId && day_id == dayId) {
+                                        meal_categories.push({
+                                            'id' : {{ $meal->pivot->meal_category }}, 
+                                            'text' : '{{ $meal_category[$meal->pivot->meal_category - 1]->name }}',
+                                        });                                        
+                                    }
+                                }
+                                @endforeach
+                            @endif
+                            AddMealWithDays(mealId, meal_categories, 1);
+                        break;
+                    case 2:
+                            @if($mealPlanTur->count() > 0) 
+                                @foreach($mealPlanTur as $meal) {
+                                    
+                                    var meal_id = {{ $meal->pivot->meal_id }};
+                                    var day_id = {{ $meal->pivot->day_id }};
+
+                                    if(meal_id == mealId && day_id == dayId) {
+                                        meal_categories.push({
+                                            'id' : {{ $meal->pivot->meal_category }}, 
+                                            'text' : '{{ $meal_category[$meal->pivot->meal_category - 1]->name }}',
+                                        });                                        
+                                    }
+                                }
+                                @endforeach
+                            @endif
+                            AddMealWithDays(mealId, meal_categories, 2);
+                        break;
+                    case 3:
+                            @if($mealPlanWed->count() > 0) 
+                                @foreach($mealPlanWed as $meal) {
+                                    
+                                    var meal_id = {{ $meal->pivot->meal_id }};
+                                    var day_id = {{ $meal->pivot->day_id }};
+
+                                    if(meal_id == mealId && day_id == dayId) {
+                                        meal_categories.push({
+                                            'id' : {{ $meal->pivot->meal_category }}, 
+                                            'text' : '{{ $meal_category[$meal->pivot->meal_category - 1]->name }}',
+                                        });                                        
+                                    }
+                                }
+                                @endforeach
+                            @endif
+                            AddMealWithDays(mealId, meal_categories, 3);
+                        break;
+                    case 4:
+                            @if($mealPlanThu->count() > 0) 
+                                @foreach($mealPlanThu as $meal) {
+                                    
+                                    var meal_id = {{ $meal->pivot->meal_id }};
+                                    var day_id = {{ $meal->pivot->day_id }};
+
+                                    if(meal_id == mealId && day_id == dayId) {
+                                        meal_categories.push({
+                                            'id' : {{ $meal->pivot->meal_category }}, 
+                                            'text' : '{{ $meal_category[$meal->pivot->meal_category - 1]->name }}',
+                                        });                                        
+                                    }
+                                }
+                                @endforeach
+                            @endif
+                            AddMealWithDays(mealId, meal_categories, 4);
+                        break;
+                    case 5:
+                            @if($mealPlanFri->count() > 0) 
+                                @foreach($mealPlanFri as $meal) {
+                                    
+                                    var meal_id = {{ $meal->pivot->meal_id }};
+                                    var day_id = {{ $meal->pivot->day_id }};
+
+                                    if(meal_id == mealId && day_id == dayId) {
+                                        meal_categories.push({
+                                            'id' : {{ $meal->pivot->meal_category }}, 
+                                            'text' : '{{ $meal_category[$meal->pivot->meal_category - 1]->name }}',
+                                        });                                        
+                                    }
+                                }
+                                @endforeach
+                            @endif
+                            AddMealWithDays(mealId, meal_categories, 5);
+                        break;
+                    case 6:
+                            @if($mealPlanSat->count() > 0) 
+                                @foreach($mealPlanSat as $meal) {
+                                    
+                                    var meal_id = {{ $meal->pivot->meal_id }};
+                                    var day_id = {{ $meal->pivot->day_id }};
+
+                                    if(meal_id == mealId && day_id == dayId) {
+                                        meal_categories.push({
+                                            'id' : {{ $meal->pivot->meal_category }}, 
+                                            'text' : '{{ $meal_category[$meal->pivot->meal_category - 1]->name }}',
+                                        });                                        
+                                    }
+                                }
+                                @endforeach
+                            @endif
+                            AddMealWithDays(mealId, meal_categories, 6);
+                        break;
+                    case 7:
+                            @if($mealPlanSun->count() > 0) 
+                                @foreach($mealPlanSun as $meal) {
+                                    
+                                    var meal_id = {{ $meal->pivot->meal_id }};
+                                    var day_id = {{ $meal->pivot->day_id }};
+
+                                    if(meal_id == mealId && day_id == dayId) {
+                                        meal_categories.push({
+                                            'id' : {{ $meal->pivot->meal_category }}, 
+                                            'text' : '{{ $meal_category[$meal->pivot->meal_category - 1]->name }}',
+                                        });                                        
+                                    }
+                                }
+                                @endforeach
+                            @endif
+                            AddMealWithDays(mealId, meal_categories, 7);
+                        break;
+                    default:
+                        break;
+                    
+                }
+
+                
+            }
 
             // select2
             function matchStart(params, data) {
@@ -512,7 +703,7 @@
 
         $('#btnAddMeal').on('click', function(e) {
             
-            debugger
+            
 
             //var categoryId = $('#meal_category').val();
             let mealId = $('#meal_id').val(); 
@@ -528,6 +719,7 @@
         var weekmeals_cate = [];
 
         function AddMealCategoryInJSON(mealid, dayid, categories) {
+            debugger
             $.each(categories, function (index, value) {
                     weekmeals_cate.push({
                                         'meal_id' : mealid, 
@@ -540,21 +732,10 @@
             $("[name=meal_cat]").val(JSON.stringify(myJSON));
         }
 
-        function AddMeal(mealId, mealCategory) {
-
-            var monday_val = $('#weekday-mon').prop('checked');
-            var tuesday_val = $('#weekday-tue').prop('checked');
-            var wednesday_val = $('#weekday-wed').prop('checked');
-            var thursday_val = $('#weekday-thu').prop('checked');
-            var friday_val = $('#weekday-fri').prop('checked');
-            var saturday_val = $('#weekday-sat').prop('checked');
-            var sunday_val = $('#weekday-sun').prop('checked');
-
-
-                           
+        function AddMealWithDays(mealId, mealCategory, day) {
             $.get("{{ route('admin.cities.get_cities') }}", { meal_id: mealId }, function (data) {
                
-                var data_ = data[0];               
+                var data_ = data[0];
                  
                 var imageUrl = "{{ asset('storage/images/meals/') }}" + "/" + data_["first_media"]["file_name"];
                 var tags = "";
@@ -567,7 +748,200 @@
                 });
 
                 $.each(mealCategory, function (index, value) {
-                    debugger
+                    
+                    mealTypes+= ' <span class="badge badge-danger">' + value["text"] + '</span>';
+                    categoryIds += value["id"] + ", ";                    
+                });
+                
+                tags = tags.slice(0,-2);
+                //mealTypes = mealTypes.slice(0,-2);                
+                categoryIds = categoryIds.slice(0,-2);
+                
+                var idtd_ = '<td style="display:none;"> <input type="number" name="weekmeals[]" value="' + data_["id"] + '" class="form-control"</td>'                
+                var imagetd_ = '<td><img src=' + imageUrl + ' height="100" style="object-fit: contain;" alt="' + data_["name"] + '"></td>';
+                var nametd_ = '<td>' + data_["name"] + '</td>'
+                var tagstd_ = '<td class="text-danger">' + tags + '</td>'
+                var peopletypetd_ = '<td>' + data_["people_type"]["name"] + '</td>'
+                var mealtypetd_ = '<td class="text-danger">' + mealTypes + '</td>'
+                var actiontd_ = '<td><a class="btn btn-sm btn-danger" onClick="deleteMeal(tr_id_' + data_["id"] + ', ' + data_["id"] + ')" style="background: white; color: red;"><i class="fa fa-trash"></i></a></td>';
+                var tr = '<tr id="tr_id_' + data_["id"] + '">' + idtd_ + imagetd_ + nametd_ + tagstd_ + peopletypetd_ + mealtypetd_ + actiontd_ + '</tr>';                
+                
+                
+                switch(day) {
+                    case 1:
+                        if(getHTML("tr_mon_" + data_["id"])) {
+                            var trVal = tr.replace("tr_id","tr_mon");
+                            trVal = trVal.replace("tr_id","tr_mon");
+                            trVal = trVal.replace("weekmeals[]","mondaymeals[]");                        
+                            $("#tbody_mon").append(trVal);
+
+                            AddMealCategoryInJSON(data_["id"], 1, mealCategory);
+                        }   
+                        break;
+                    case 2:
+                        if(getHTML("tr_tue_" + data_["id"])) {
+                            var trVal = tr.replace("tr_id","tr_tue");
+                            trVal = trVal.replace("tr_id","tr_tue");
+                            trVal = trVal.replace("weekmeals[]","tuesdaymeals[]");                        
+                            $("#tbody_tue").append(trVal);
+
+                            AddMealCategoryInJSON(data_["id"], 2, mealCategory);
+                        }  
+                        break;
+                    case 3:
+                        if(getHTML("tr_wed_" + data_["id"])) {
+                            var trVal = tr.replace("tr_id","tr_wed");
+                            trVal = trVal.replace("tr_id","tr_wed");
+                            trVal = trVal.replace("weekmeals[]","wednesdaymeals[]");                        
+                            $("#tbody_wed").append(trVal);
+
+                            AddMealCategoryInJSON(data_["id"], 3, mealCategory);
+                        }
+                        break;
+                    case 4:
+                        if(getHTML("tr_thu_" + data_["id"])) {
+                            var trVal = tr.replace("tr_id","tr_thu");
+                            trVal = trVal.replace("tr_id","tr_thu");
+                            trVal = trVal.replace("weekmeals[]","thursdaymeals[]");                        
+                            $("#tbody_thu").append(trVal);
+
+                            AddMealCategoryInJSON(data_["id"], 4, mealCategory);
+                        }         
+                        break;
+                    case 5:
+                        if(getHTML("tr_fri_" + data_["id"])) {
+                            var trVal = tr.replace("tr_id","tr_fri");
+                            trVal = trVal.replace("tr_id","tr_fri");
+                            trVal = trVal.replace("weekmeals[]","fridaymeals[]");                        
+                            $("#tbody_fri").append(trVal);
+
+                            AddMealCategoryInJSON(data_["id"], 5, mealCategory);
+                        }  
+                        break;
+                    case 6:
+                        if(getHTML("tr_sat_" + data_["id"])) {
+                            var trVal = tr.replace("tr_id","tr_sat");
+                            trVal = trVal.replace("tr_id","tr_sat");
+                            trVal = trVal.replace("weekmeals[]","saturdaymeals[]");                        
+                            $("#tbody_sat").append(trVal);
+
+                            AddMealCategoryInJSON(data_["id"], 6, mealCategory);
+                        }
+                        break;
+                    case 7:
+                        if(getHTML("tr_sun_" + data_["id"])) {
+                            var trVal = tr.replace("tr_id","tr_sun");
+                            trVal = trVal.replace("tr_id","tr_sun");
+                            trVal = trVal.replace("weekmeals[]","sundaymeals[]");                        
+                            $("#tbody_sun").append(trVal);
+
+                            AddMealCategoryInJSON(data_["id"], 7, mealCategory);
+                        }  
+                        break;
+                    default:
+                        break;
+                }
+/*
+                if(monday_val) {
+                    if(getHTML("tr_mon_" + data_["id"])) {
+                        var trVal = tr.replace("tr_id","tr_mon");
+                        trVal = trVal.replace("tr_id","tr_mon");
+                        trVal = trVal.replace("weekmeals[]","mondaymeals[]");                        
+                        $("#tbody_mon").append(trVal);
+
+                        AddMealCategoryInJSON(data_["id"], 1, mealCategory);
+                    }                    
+                }
+                if(tuesday_val) {
+                    if(getHTML("tr_tue_" + data_["id"])) {
+                        var trVal = tr.replace("tr_id","tr_tue");
+                        trVal = trVal.replace("tr_id","tr_tue");
+                        trVal = trVal.replace("weekmeals[]","tuesdaymeals[]");                        
+                        $("#tbody_tue").append(trVal);
+
+                        AddMealCategoryInJSON(data_["id"], 2, mealCategory);
+                    }                    
+                }
+                if(wednesday_val) {
+                    if(getHTML("tr_wed_" + data_["id"])) {
+                        var trVal = tr.replace("tr_id","tr_wed");
+                        trVal = trVal.replace("tr_id","tr_wed");
+                        trVal = trVal.replace("weekmeals[]","wednesdaymeals[]");                        
+                        $("#tbody_wed").append(trVal);
+
+                        AddMealCategoryInJSON(data_["id"], 3, mealCategory);
+                    }
+                }
+                if(thursday_val) {
+                    if(getHTML("tr_thu_" + data_["id"])) {
+                        var trVal = tr.replace("tr_id","tr_thu");
+                        trVal = trVal.replace("tr_id","tr_thu");
+                        trVal = trVal.replace("weekmeals[]","thursdaymeals[]");                        
+                        $("#tbody_thu").append(trVal);
+
+                        AddMealCategoryInJSON(data_["id"], 4, mealCategory);
+                    }                    
+                }
+                if(friday_val) {
+                    if(getHTML("tr_fri_" + data_["id"])) {
+                        var trVal = tr.replace("tr_id","tr_fri");
+                        trVal = trVal.replace("tr_id","tr_fri");
+                        trVal = trVal.replace("weekmeals[]","fridaymeals[]");                        
+                        $("#tbody_fri").append(trVal);
+
+                        AddMealCategoryInJSON(data_["id"], 5, mealCategory);
+                    }                    
+                }
+                if(saturday_val) {
+                    if(getHTML("tr_sat_" + data_["id"])) {
+                        var trVal = tr.replace("tr_id","tr_sat");
+                        trVal = trVal.replace("tr_id","tr_sat");
+                        trVal = trVal.replace("weekmeals[]","saturdaymeals[]");                        
+                        $("#tbody_sat").append(trVal);
+
+                        AddMealCategoryInJSON(data_["id"], 6, mealCategory);
+                    }
+                }
+                if(sunday_val) {
+                    if(getHTML("tr_sun_" + data_["id"])) {
+                        var trVal = tr.replace("tr_id","tr_sun");
+                        trVal = trVal.replace("tr_id","tr_sun");
+                        trVal = trVal.replace("weekmeals[]","sundaymeals[]");                        
+                        $("#tbody_sun").append(trVal);
+
+                        AddMealCategoryInJSON(data_["id"], 7, mealCategory);
+                    }                    
+                }
+*/
+            }, "json");
+        }
+
+        function AddMeal(mealId, mealCategory) {
+
+            var monday_val = $('#weekday-mon').prop('checked');
+            var tuesday_val = $('#weekday-tue').prop('checked');
+            var wednesday_val = $('#weekday-wed').prop('checked');
+            var thursday_val = $('#weekday-thu').prop('checked');
+            var friday_val = $('#weekday-fri').prop('checked');
+            var saturday_val = $('#weekday-sat').prop('checked');
+            var sunday_val = $('#weekday-sun').prop('checked');
+                           
+            $.get("{{ route('admin.cities.get_cities') }}", { meal_id: mealId }, function (data) {
+               
+                var data_ = data[0];
+                 
+                var imageUrl = "{{ asset('storage/images/meals/') }}" + "/" + data_["first_media"]["file_name"];
+                var tags = "";
+                var mealTypes = "";
+                var categoryIds = "";
+
+                $.each(data_["tags"], function (index, value) {
+                    //tags+= value["name"] + ", ";
+                    tags+= ' <span class="badge badge-danger">' + value["name"] + '</span>';
+                });
+
+                $.each(mealCategory, function (index, value) {
+                    
                     mealTypes+= ' <span class="badge badge-danger">' + value["text"] + '</span>';
                     categoryIds += value["id"] + ", ";                    
                 });
@@ -661,7 +1035,7 @@
         }
 
         function deleteMeal(rowid, id) {
-            debugger
+            
             var trid = rowid.id;
             var day_id = 0;
 
@@ -702,7 +1076,7 @@
             });             
 
             for (let a = deleteMeals.length; a > 0; a--) {
-                debugger
+                
                 weekmeals_cate.splice(deleteMeals[a-1]["id"], 1);
             }
         }
