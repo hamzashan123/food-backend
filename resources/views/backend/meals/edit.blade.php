@@ -196,7 +196,7 @@
                         <div class="form-group">
                             <label for="details" class="text-small text-uppercase">{{ __('Details') }}</label>
                             <textarea name="details" class="form-control summernote">
-                                {!! old('details', $meal->description) !!}
+                                {!! old('details', $meal->details) !!}
                             </textarea>
                             @error('details')<span class="text-danger">{{ $message }}</span>@enderror
                         </div>

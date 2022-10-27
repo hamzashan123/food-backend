@@ -59,19 +59,16 @@ class MealController extends Controller
         $request->request->remove('dish_id');
         $this->authorize('create_meal');
         
-        if ($request->validated()){
-           // $meal = Meal::create($request->except('tags', 'images', 'dishes', 'days', '_token'));
+        if ($request->validated()){           
            $meal = Meal::create($request->except('tags', 'mealTypes', 'images', 'dishes','_token'));
 
             $meal->tags()->attach($request->tags);
             $meal->mealTypes()->attach($request->mealTypes);
 
-            $dishes = $request->input('dishes', []);
-            //$days = $request->input('days', []);
+            $dishes = $request->input('dishes', []);           
 
             for ($dish=0; $dish < count($dishes); $dish++) {
-                if ($dishes[$dish] != '') {
-                    //$meal->dishes()->attach($dishes[$dish], ['day_id' => $days[$dish]]);
+                if ($dishes[$dish] != '') {                    
                     $meal->dishes()->attach($dishes[$dish]);
                 }
             }
@@ -93,14 +90,6 @@ class MealController extends Controller
             'alert-type' => 'error'
         ]);
     }
-/*
-    public function show(Dish $dish): View
-    {
-        $this->authorize('show_dish');
-
-        return view('backend.dishes.show', compact('dish'));
-    }
-*/
     public function edit(Meal $meal): View
     {
         $this->authorize('edit_meal');
@@ -112,12 +101,16 @@ class MealController extends Controller
         $tags = Tag::whereStatus(1)->get(['id', 'name']);
         
         //dd($meal->dishes);
+        
 
         return view('backend.meals.edit', compact('meal', 'mealTypes', 'peopleTypes', 'tags', 'dishes', 'days'));
     }
 
     public function update(MealRequest $request, Meal $meal): RedirectResponse
     {
+
+        dd($meal->id);
+
         $request->request->remove('dish_id');
         $this->authorize('edit_meal');
 

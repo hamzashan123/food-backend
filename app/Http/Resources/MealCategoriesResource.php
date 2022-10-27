@@ -9,15 +9,8 @@ use Carbon\Carbon;
 use Auth;
 use Illuminate\Support\Facades\File;
 use App\Models\UserRole;
-use App\Http\Resources\TagResource;
-use App\Http\Resources\DaysResource;
-use App\Models\MealDetail;
-use App\Models\Day;
-use App\Models\Meal;
-use App\Http\Resources\MealResource;
 
-
-class LandingMealPlanDaysResource extends JsonResource
+class MealCategoriesResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -27,8 +20,10 @@ class LandingMealPlanDaysResource extends JsonResource
      */
     public function toArray($request)
     {
-        $meals = Meal::where("id", $this->pivot->meal_id)->first();
-        return new MealResource($meals);
-        
+        return [
+            'id'=> $this->id,
+            'name'=> $this->name,            
+            'status'=> $this->status,
+        ];
     }
 }

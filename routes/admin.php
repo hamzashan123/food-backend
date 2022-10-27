@@ -70,6 +70,7 @@ Route::group(['middleware' => ['roles']], function () {
     Route::resource('mealplans', MealPlanController::class);
     Route::post('/mealplans/remove-image', [MealPlanController::class, 'removeImage'])->name('mealplans.remove_image');
     
+    
     //new routes here..
 });
 
