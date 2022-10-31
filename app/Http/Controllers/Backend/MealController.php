@@ -109,7 +109,7 @@ class MealController extends Controller
     public function update(MealRequest $request, Meal $meal): RedirectResponse
     {
 
-        dd($meal->id);
+       // dd($meal->id);
 
         $request->request->remove('dish_id');
         $this->authorize('edit_meal');
