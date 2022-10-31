@@ -259,7 +259,7 @@ class MealPlanController extends Controller
             $i = $mealplan->media()->count() + 1;
 
             if ($request->images && count($request->images) > 0) {
-                (new ImageService())->storeMealPlanImages($request->images, mealplan, $i);
+                (new ImageService())->storeMealPlanImages($request->images, $mealplan, $i);
             }
           
             clear_cache();
