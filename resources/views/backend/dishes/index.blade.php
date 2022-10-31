@@ -1,5 +1,11 @@
 @extends('layouts.admin')
 
+<style>
+    td img {
+    object-fit: cover;
+    border-radius: 30px;
+    }
+</style>
 @section('content')
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex">
